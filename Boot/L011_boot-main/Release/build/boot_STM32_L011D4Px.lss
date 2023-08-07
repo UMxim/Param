@@ -5,31 +5,31 @@ Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
   0 .isr_vector   00000010  08000000  08000000  00008000  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         00000030  08000010  08000010  00008010  2**2
+  1 .text         00000038  08000010  08000010  00008010  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .text.startup 000001a8  08000040  08000040  00008040  2**2
+  2 .text.startup 000001a8  08000048  08000048  00008048  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  3 .rodata       00000011  080001e8  080001e8  000081e8  2**0
+  3 .consts       00000009  080001f6  080001f6  000081f6  2**0
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  4 .debug_info   0000085e  00000000  00000000  000081f9  2**0
+  4 .debug_info   000008c5  00000000  00000000  000081ff  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_abbrev 000002ea  00000000  00000000  00008a57  2**0
+  5 .debug_abbrev 000002fb  00000000  00000000  00008ac4  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_aranges 00000048  00000000  00000000  00008d41  2**0
+  6 .debug_aranges 00000048  00000000  00000000  00008dbf  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   00000219  00000000  00000000  00008d89  2**0
+  7 .debug_line   00000213  00000000  00000000  00008e07  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_str    0000039d  00000000  00000000  00008fa2  2**0
+  8 .debug_str    000003d0  00000000  00000000  0000901a  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .comment      00000070  00000000  00000000  0000933f  2**0
+  9 .comment      00000070  00000000  00000000  000093ea  2**0
                   CONTENTS, READONLY
- 10 .ARM.attributes 00000031  00000000  00000000  000093af  2**0
+ 10 .ARM.attributes 00000031  00000000  00000000  0000945a  2**0
                   CONTENTS, READONLY
- 11 .debug_frame  00000074  00000000  00000000  000093e0  2**2
+ 11 .debug_frame  00000074  00000000  00000000  0000948c  2**2
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    0000033a  00000000  00000000  00009454  2**0
+ 12 .debug_loc    0000033a  00000000  00000000  00009500  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00000060  00000000  00000000  0000978e  2**0
+ 13 .debug_ranges 00000060  00000000  00000000  0000983a  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -50,11 +50,11 @@ void __attribute__((naked, noreturn)) Default_Handler(){
 void __attribute__((naked, noreturn)) Reset_Handler()
 {
    main();
- 8000012:	f000 f815 	bl	8000040 <main>
+ 8000012:	f000 f819 	bl	8000048 <main>
  8000016:	0000      	movs	r0, r0
 
 08000018 <SendData>:
-#define ERASE 				(FLASH_PECR_ERASE | FLASH_PECR_PROG)
+};
 
 static void SendData(const uint8_t* data, uint32_t size)
 {
@@ -90,500 +90,491 @@ static void SendData(const uint8_t* data, uint32_t size)
  800003a:	46c0      	nop			; (mov r8, r8)
  800003c:	40004800 	.word	0x40004800
 
+08000040 <errCS.4556>:
+ 8000040:	7f017f01                                ....
+
+08000044 <errType.4557>:
+ 8000044:	7c027f01                                ...|
+
 Disassembly of section .text.startup:
 
-08000040 <main>:
+08000048 <main>:
 int main(void)
 {	
 	
 // BR = 9600 !!!!!	
 	// SysTick
 	SysTick->LOAD = ANSWER_WAIT_MS * SYS_CLK_FREQ_KHZ;
- 8000040:	23fa      	movs	r3, #250	; 0xfa
+ 8000048:	23fa      	movs	r3, #250	; 0xfa
     __set_MSP(*(__IO uint32_t*) _FW_PAGE_START);          //устанавливаем SP приложения                                           
     Jump_To_Application();		                        //запускаем приложение	
 }
 
 int main(void)
 {	
- 8000042:	b5f0      	push	{r4, r5, r6, r7, lr}
- 8000044:	4c54      	ldr	r4, [pc, #336]	; (8000198 <main+0x158>)
+ 800004a:	b5f0      	push	{r4, r5, r6, r7, lr}
+ 800004c:	4c53      	ldr	r4, [pc, #332]	; (800019c <main+0x154>)
 	
 // BR = 9600 !!!!!	
 	// SysTick
 	SysTick->LOAD = ANSWER_WAIT_MS * SYS_CLK_FREQ_KHZ;
- 8000046:	031b      	lsls	r3, r3, #12
+ 800004e:	031b      	lsls	r3, r3, #12
     __set_MSP(*(__IO uint32_t*) _FW_PAGE_START);          //устанавливаем SP приложения                                           
     Jump_To_Application();		                        //запускаем приложение	
 }
 
 int main(void)
 {	
- 8000048:	44a5      	add	sp, r4
+ 8000050:	44a5      	add	sp, r4
 	
 // BR = 9600 !!!!!	
 	// SysTick
 	SysTick->LOAD = ANSWER_WAIT_MS * SYS_CLK_FREQ_KHZ;
- 800004a:	4c54      	ldr	r4, [pc, #336]	; (800019c <main+0x15c>)
+ 8000052:	4c53      	ldr	r4, [pc, #332]	; (80001a0 <main+0x158>)
 	SysTick->VAL = 0;
 	SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk;
 	// UART
 	RCC->APB1ENR = RCC_APB1ENR_LPUART1EN | RCC_APB1ENR_USART2EN; 
- 800004c:	22c0      	movs	r2, #192	; 0xc0
+ 8000054:	22c0      	movs	r2, #192	; 0xc0
 int main(void)
 {	
 	
 // BR = 9600 !!!!!	
 	// SysTick
 	SysTick->LOAD = ANSWER_WAIT_MS * SYS_CLK_FREQ_KHZ;
- 800004e:	6063      	str	r3, [r4, #4]
+ 8000056:	6063      	str	r3, [r4, #4]
 	SysTick->VAL = 0;
- 8000050:	2300      	movs	r3, #0
+ 8000058:	2300      	movs	r3, #0
 	SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk;
- 8000052:	2705      	movs	r7, #5
+ 800005a:	2605      	movs	r6, #5
 {	
 	
 // BR = 9600 !!!!!	
 	// SysTick
 	SysTick->LOAD = ANSWER_WAIT_MS * SYS_CLK_FREQ_KHZ;
 	SysTick->VAL = 0;
- 8000054:	60a3      	str	r3, [r4, #8]
+ 800005c:	60a3      	str	r3, [r4, #8]
 	SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk;
 	// UART
 	RCC->APB1ENR = RCC_APB1ENR_LPUART1EN | RCC_APB1ENR_USART2EN; 
- 8000056:	4b52      	ldr	r3, [pc, #328]	; (80001a0 <main+0x160>)
- 8000058:	02d2      	lsls	r2, r2, #11
+ 800005e:	4b51      	ldr	r3, [pc, #324]	; (80001a4 <main+0x15c>)
+ 8000060:	02d2      	lsls	r2, r2, #11
 	
 // BR = 9600 !!!!!	
 	// SysTick
 	SysTick->LOAD = ANSWER_WAIT_MS * SYS_CLK_FREQ_KHZ;
 	SysTick->VAL = 0;
 	SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk;
- 800005a:	6027      	str	r7, [r4, #0]
+ 8000062:	6026      	str	r6, [r4, #0]
 	// UART
 	RCC->APB1ENR = RCC_APB1ENR_LPUART1EN | RCC_APB1ENR_USART2EN; 
- 800005c:	639a      	str	r2, [r3, #56]	; 0x38
+ 8000064:	639a      	str	r2, [r3, #56]	; 0x38
 	RCC->IOPENR = RCC_IOPENR_GPIOAEN;
- 800005e:	2201      	movs	r2, #1
- 8000060:	62da      	str	r2, [r3, #44]	; 0x2c
+ 8000066:	2201      	movs	r2, #1
+ 8000068:	62da      	str	r2, [r3, #44]	; 0x2c
 	UART->CR3 = USART_CR3_HDSEL;
- 8000062:	2308      	movs	r3, #8
- 8000064:	4d4f      	ldr	r5, [pc, #316]	; (80001a4 <main+0x164>)
+ 800006a:	2308      	movs	r3, #8
+ 800006c:	4d4e      	ldr	r5, [pc, #312]	; (80001a8 <main+0x160>)
 	UART->BRR = UART_BRR;
 	// GPIO	
 	UART_PORT->OTYPER |= GPIO_OPEN_DRAIN; // OpenDrain 1
- 8000066:	2180      	movs	r1, #128	; 0x80
+ 800006e:	2180      	movs	r1, #128	; 0x80
 	SysTick->VAL = 0;
 	SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk;
 	// UART
 	RCC->APB1ENR = RCC_APB1ENR_LPUART1EN | RCC_APB1ENR_USART2EN; 
 	RCC->IOPENR = RCC_IOPENR_GPIOAEN;
 	UART->CR3 = USART_CR3_HDSEL;
- 8000068:	60ab      	str	r3, [r5, #8]
+ 8000070:	60ab      	str	r3, [r5, #8]
 	UART->BRR = UART_BRR;
- 800006a:	4b4f      	ldr	r3, [pc, #316]	; (80001a8 <main+0x168>)
+ 8000072:	4b4e      	ldr	r3, [pc, #312]	; (80001ac <main+0x164>)
 	// GPIO	
 	UART_PORT->OTYPER |= GPIO_OPEN_DRAIN; // OpenDrain 1
 	UPDATE_MASK(UART_PORT->PUPDR, GPIO_PULL_UP_MSK, GPIO_PULL_UP_VAL);		//2
- 800006c:	2080      	movs	r0, #128	; 0x80
+ 8000074:	2080      	movs	r0, #128	; 0x80
 	SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk;
 	// UART
 	RCC->APB1ENR = RCC_APB1ENR_LPUART1EN | RCC_APB1ENR_USART2EN; 
 	RCC->IOPENR = RCC_IOPENR_GPIOAEN;
 	UART->CR3 = USART_CR3_HDSEL;
 	UART->BRR = UART_BRR;
- 800006e:	60eb      	str	r3, [r5, #12]
+ 8000076:	60eb      	str	r3, [r5, #12]
 	// GPIO	
 	UART_PORT->OTYPER |= GPIO_OPEN_DRAIN; // OpenDrain 1
- 8000070:	23a0      	movs	r3, #160	; 0xa0
- 8000072:	05db      	lsls	r3, r3, #23
- 8000074:	685a      	ldr	r2, [r3, #4]
- 8000076:	01c9      	lsls	r1, r1, #7
- 8000078:	430a      	orrs	r2, r1
- 800007a:	605a      	str	r2, [r3, #4]
+ 8000078:	23a0      	movs	r3, #160	; 0xa0
+ 800007a:	05db      	lsls	r3, r3, #23
+ 800007c:	685a      	ldr	r2, [r3, #4]
+ 800007e:	01c9      	lsls	r1, r1, #7
+ 8000080:	430a      	orrs	r2, r1
+ 8000082:	605a      	str	r2, [r3, #4]
 	UPDATE_MASK(UART_PORT->PUPDR, GPIO_PULL_UP_MSK, GPIO_PULL_UP_VAL);		//2
- 800007c:	68d9      	ldr	r1, [r3, #12]
- 800007e:	4a4b      	ldr	r2, [pc, #300]	; (80001ac <main+0x16c>)
- 8000080:	0540      	lsls	r0, r0, #21
- 8000082:	4011      	ands	r1, r2
- 8000084:	4301      	orrs	r1, r0
- 8000086:	60d9      	str	r1, [r3, #12]
+ 8000084:	68d9      	ldr	r1, [r3, #12]
+ 8000086:	4a4a      	ldr	r2, [pc, #296]	; (80001b0 <main+0x168>)
+ 8000088:	0540      	lsls	r0, r0, #21
+ 800008a:	4011      	ands	r1, r2
+ 800008c:	4301      	orrs	r1, r0
+ 800008e:	60d9      	str	r1, [r3, #12]
 	UPDATE_MASK(UART_PORT->AFR[GPIO_AFR_NUM], GPIO_AFR_MSK, GPIO_AFR << GPIO_AFR_POS);
- 8000088:	6a58      	ldr	r0, [r3, #36]	; 0x24
- 800008a:	4949      	ldr	r1, [pc, #292]	; (80001b0 <main+0x170>)
-	//
-	uint32_t buff32[(1<<_PAGE_SIZE_POW) + 5]; // потому-что памяти завались....
-	uint8_t *buff = (uint8_t *)buff32;
-	static const uint8_t firstPacket[] = {0x06, 0x07, _BOOT_VER, _HW_TYPE, _HW_VER, _PAGE_SIZE_POW, _PAGES_FOR_WRITE >> 8, _PAGES_FOR_WRITE,
-										  0x06^ 0x07 ^_BOOT_VER ^_HW_TYPE ^_HW_VER ^_PAGE_SIZE_POW^(_PAGES_FOR_WRITE >> 8)^_PAGES_FOR_WRITE};
-	SendData((void*)firstPacket, sizeof(firstPacket));
- 800008c:	4e49      	ldr	r6, [pc, #292]	; (80001b4 <main+0x174>)
-	UART->CR3 = USART_CR3_HDSEL;
-	UART->BRR = UART_BRR;
-	// GPIO	
-	UART_PORT->OTYPER |= GPIO_OPEN_DRAIN; // OpenDrain 1
-	UPDATE_MASK(UART_PORT->PUPDR, GPIO_PULL_UP_MSK, GPIO_PULL_UP_VAL);		//2
-	UPDATE_MASK(UART_PORT->AFR[GPIO_AFR_NUM], GPIO_AFR_MSK, GPIO_AFR << GPIO_AFR_POS);
- 800008e:	4001      	ands	r1, r0
- 8000090:	20c0      	movs	r0, #192	; 0xc0
- 8000092:	04c0      	lsls	r0, r0, #19
- 8000094:	4301      	orrs	r1, r0
- 8000096:	6259      	str	r1, [r3, #36]	; 0x24
+ 8000090:	6a58      	ldr	r0, [r3, #36]	; 0x24
+ 8000092:	4948      	ldr	r1, [pc, #288]	; (80001b4 <main+0x16c>)
+ 8000094:	4001      	ands	r1, r0
+ 8000096:	20c0      	movs	r0, #192	; 0xc0
+ 8000098:	04c0      	lsls	r0, r0, #19
+ 800009a:	4301      	orrs	r1, r0
+ 800009c:	6259      	str	r1, [r3, #36]	; 0x24
 	UPDATE_MASK(UART_PORT->MODER, GPIO_MODER_MSK, GPIO_MODER_VAL);
- 8000098:	6819      	ldr	r1, [r3, #0]
+ 800009e:	6819      	ldr	r1, [r3, #0]
+	
 	//
 	uint32_t buff32[(1<<_PAGE_SIZE_POW) + 5]; // потому-что памяти завались....
 	uint8_t *buff = (uint8_t *)buff32;
-	static const uint8_t firstPacket[] = {0x06, 0x07, _BOOT_VER, _HW_TYPE, _HW_VER, _PAGE_SIZE_POW, _PAGES_FOR_WRITE >> 8, _PAGES_FOR_WRITE,
-										  0x06^ 0x07 ^_BOOT_VER ^_HW_TYPE ^_HW_VER ^_PAGE_SIZE_POW^(_PAGES_FOR_WRITE >> 8)^_PAGES_FOR_WRITE};
-	SendData((void*)firstPacket, sizeof(firstPacket));
- 800009a:	1c30      	adds	r0, r6, #0
+	
+	SendData((const void *)&vers, sizeof(vers));
+ 80000a0:	4845      	ldr	r0, [pc, #276]	; (80001b8 <main+0x170>)
 	UART->BRR = UART_BRR;
 	// GPIO	
 	UART_PORT->OTYPER |= GPIO_OPEN_DRAIN; // OpenDrain 1
 	UPDATE_MASK(UART_PORT->PUPDR, GPIO_PULL_UP_MSK, GPIO_PULL_UP_VAL);		//2
 	UPDATE_MASK(UART_PORT->AFR[GPIO_AFR_NUM], GPIO_AFR_MSK, GPIO_AFR << GPIO_AFR_POS);
 	UPDATE_MASK(UART_PORT->MODER, GPIO_MODER_MSK, GPIO_MODER_VAL);
- 800009c:	400a      	ands	r2, r1
- 800009e:	2180      	movs	r1, #128	; 0x80
- 80000a0:	0589      	lsls	r1, r1, #22
- 80000a2:	430a      	orrs	r2, r1
- 80000a4:	601a      	str	r2, [r3, #0]
+ 80000a2:	400a      	ands	r2, r1
+ 80000a4:	2180      	movs	r1, #128	; 0x80
+ 80000a6:	0589      	lsls	r1, r1, #22
+ 80000a8:	430a      	orrs	r2, r1
+ 80000aa:	601a      	str	r2, [r3, #0]
+	
 	//
 	uint32_t buff32[(1<<_PAGE_SIZE_POW) + 5]; // потому-что памяти завались....
 	uint8_t *buff = (uint8_t *)buff32;
-	static const uint8_t firstPacket[] = {0x06, 0x07, _BOOT_VER, _HW_TYPE, _HW_VER, _PAGE_SIZE_POW, _PAGES_FOR_WRITE >> 8, _PAGES_FOR_WRITE,
-										  0x06^ 0x07 ^_BOOT_VER ^_HW_TYPE ^_HW_VER ^_PAGE_SIZE_POW^(_PAGES_FOR_WRITE >> 8)^_PAGES_FOR_WRITE};
-	SendData((void*)firstPacket, sizeof(firstPacket));
- 80000a6:	2109      	movs	r1, #9
- 80000a8:	f7ff ffb6 	bl	8000018 <SendData>
+	
+	SendData((const void *)&vers, sizeof(vers));
+ 80000ac:	2109      	movs	r1, #9
+ 80000ae:	f7ff ffb3 	bl	8000018 <SendData>
 	
 	UART->CR1 = USART_CR1_RE | USART_CR1_UE;
- 80000ac:	602f      	str	r7, [r5, #0]
- 80000ae:	9601      	str	r6, [sp, #4]
+ 80000b2:	602e      	str	r6, [r5, #0]
 	
 	while(!(UART->ISR & USART_ISR_RXNE_Msk))
- 80000b0:	69eb      	ldr	r3, [r5, #28]
- 80000b2:	069b      	lsls	r3, r3, #26
- 80000b4:	d40c      	bmi.n	80000d0 <main+0x90>
+ 80000b4:	69eb      	ldr	r3, [r5, #28]
+ 80000b6:	069b      	lsls	r3, r3, #26
+ 80000b8:	d40c      	bmi.n	80000d4 <main+0x8c>
 	{
 		if (SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk)
- 80000b6:	6823      	ldr	r3, [r4, #0]
- 80000b8:	03db      	lsls	r3, r3, #15
- 80000ba:	d5f9      	bpl.n	80000b0 <main+0x70>
+ 80000ba:	6823      	ldr	r3, [r4, #0]
+ 80000bc:	03db      	lsls	r3, r3, #15
+ 80000be:	d5f9      	bpl.n	80000b4 <main+0x6c>
     uint32_t app_jump_address;
 	
     typedef void(*pFunction)(void);//объявляем пользовательский тип
     pFunction Jump_To_Application;//и создаём переменную этого типа
 		
 		SCB->VTOR = _FW_PAGE_START;
- 80000bc:	4b3e      	ldr	r3, [pc, #248]	; (80001b8 <main+0x178>)
- 80000be:	4a3f      	ldr	r2, [pc, #252]	; (80001bc <main+0x17c>)
- 80000c0:	6093      	str	r3, [r2, #8]
+ 80000c0:	4b3e      	ldr	r3, [pc, #248]	; (80001bc <main+0x174>)
+ 80000c2:	4a3f      	ldr	r2, [pc, #252]	; (80001c0 <main+0x178>)
+ 80000c4:	6093      	str	r3, [r2, #8]
 	
     app_jump_address = *( uint32_t*) (_FW_PAGE_START + 4);    //извлекаем адрес перехода из вектора Reset
     Jump_To_Application = (pFunction)app_jump_address;            //приводим его к пользовательскому типу
     __set_MSP(*(__IO uint32_t*) _FW_PAGE_START);          //устанавливаем SP приложения                                           
- 80000c2:	681b      	ldr	r3, [r3, #0]
+ 80000c6:	681b      	ldr	r3, [r3, #0]
   \details Assigns the given value to the Main Stack Pointer (MSP).
   \param [in]    topOfMainStack  Main Stack Pointer value to set
  */
 __STATIC_FORCEINLINE void __set_MSP(uint32_t topOfMainStack)
 {
   __ASM volatile ("MSR msp, %0" : : "r" (topOfMainStack) : );
- 80000c4:	f383 8808 	msr	MSP, r3
+ 80000c8:	f383 8808 	msr	MSP, r3
     typedef void(*pFunction)(void);//объявляем пользовательский тип
     pFunction Jump_To_Application;//и создаём переменную этого типа
 		
 		SCB->VTOR = _FW_PAGE_START;
 	
     app_jump_address = *( uint32_t*) (_FW_PAGE_START + 4);    //извлекаем адрес перехода из вектора Reset
- 80000c8:	4b3d      	ldr	r3, [pc, #244]	; (80001c0 <main+0x180>)
+ 80000cc:	4b3d      	ldr	r3, [pc, #244]	; (80001c4 <main+0x17c>)
     Jump_To_Application = (pFunction)app_jump_address;            //приводим его к пользовательскому типу
     __set_MSP(*(__IO uint32_t*) _FW_PAGE_START);          //устанавливаем SP приложения                                           
     Jump_To_Application();		                        //запускаем приложение	
- 80000ca:	681b      	ldr	r3, [r3, #0]
- 80000cc:	4798      	blx	r3
- 80000ce:	e7ef      	b.n	80000b0 <main+0x70>
+ 80000ce:	681b      	ldr	r3, [r3, #0]
+ 80000d0:	4798      	blx	r3
+ 80000d2:	e7ef      	b.n	80000b4 <main+0x6c>
 	{
 		if (SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk)
 			Go_To_User_App();
 	}
 	
 	FLASH->PEKEYR =  0x89ABCDEF;
- 80000d0:	4c3c      	ldr	r4, [pc, #240]	; (80001c4 <main+0x184>)
- 80000d2:	4b3d      	ldr	r3, [pc, #244]	; (80001c8 <main+0x188>)
- 80000d4:	60e3      	str	r3, [r4, #12]
-	FLASH->PEKEYR =  0x02030405;
- 80000d6:	4b3d      	ldr	r3, [pc, #244]	; (80001cc <main+0x18c>)
+ 80000d4:	4c3c      	ldr	r4, [pc, #240]	; (80001c8 <main+0x180>)
+ 80000d6:	4b3d      	ldr	r3, [pc, #244]	; (80001cc <main+0x184>)
  80000d8:	60e3      	str	r3, [r4, #12]
+	FLASH->PEKEYR =  0x02030405;
+ 80000da:	4b3d      	ldr	r3, [pc, #244]	; (80001d0 <main+0x188>)
+ 80000dc:	60e3      	str	r3, [r4, #12]
 	FLASH->PRGKEYR = 0x8C9DAEBF;
- 80000da:	4b3d      	ldr	r3, [pc, #244]	; (80001d0 <main+0x190>)
- 80000dc:	6123      	str	r3, [r4, #16]
-	FLASH->PRGKEYR = 0x13141516;
- 80000de:	4b3d      	ldr	r3, [pc, #244]	; (80001d4 <main+0x194>)
+ 80000de:	4b3d      	ldr	r3, [pc, #244]	; (80001d4 <main+0x18c>)
  80000e0:	6123      	str	r3, [r4, #16]
+	FLASH->PRGKEYR = 0x13141516;
+ 80000e2:	4b3d      	ldr	r3, [pc, #244]	; (80001d8 <main+0x190>)
+ 80000e4:	6123      	str	r3, [r4, #16]
 	//UART->CR1 = USART_CR1_UE;
 }
 
-static uint16_t ReceiveData(uint8_t *data)
+static inline uint16_t ReceiveData(uint8_t *data)
 {	
 	UART->CR1 = USART_CR1_RE | USART_CR1_UE;
- 80000e2:	2305      	movs	r3, #5
- 80000e4:	602b      	str	r3, [r5, #0]
+ 80000e6:	2305      	movs	r3, #5
+ 80000e8:	602b      	str	r3, [r5, #0]
 	while(!(UART->ISR & USART_ISR_RXNE_Msk));
- 80000e6:	69eb      	ldr	r3, [r5, #28]
- 80000e8:	069b      	lsls	r3, r3, #26
- 80000ea:	d5fc      	bpl.n	80000e6 <main+0xa6>
+ 80000ea:	69eb      	ldr	r3, [r5, #28]
+ 80000ec:	069b      	lsls	r3, r3, #26
+ 80000ee:	d5fc      	bpl.n	80000ea <main+0xa2>
 	*data = UART->RDR;
- 80000ec:	4b2d      	ldr	r3, [pc, #180]	; (80001a4 <main+0x164>)
- 80000ee:	a803      	add	r0, sp, #12
- 80000f0:	6a5a      	ldr	r2, [r3, #36]	; 0x24
+ 80000f0:	4b2d      	ldr	r3, [pc, #180]	; (80001a8 <main+0x160>)
+ 80000f2:	a801      	add	r0, sp, #4
+ 80000f4:	6a5a      	ldr	r2, [r3, #36]	; 0x24
 	
 	uint16_t size = (*data == 0xFF) ? (1<<_PAGE_SIZE_POW) + 2 : *data;
- 80000f2:	2382      	movs	r3, #130	; 0x82
+ 80000f6:	2382      	movs	r3, #130	; 0x82
 
-static uint16_t ReceiveData(uint8_t *data)
+static inline uint16_t ReceiveData(uint8_t *data)
 {	
 	UART->CR1 = USART_CR1_RE | USART_CR1_UE;
 	while(!(UART->ISR & USART_ISR_RXNE_Msk));
 	*data = UART->RDR;
- 80000f4:	b2d2      	uxtb	r2, r2
- 80000f6:	7002      	strb	r2, [r0, #0]
+ 80000f8:	b2d2      	uxtb	r2, r2
+ 80000fa:	7002      	strb	r2, [r0, #0]
 	
 	uint16_t size = (*data == 0xFF) ? (1<<_PAGE_SIZE_POW) + 2 : *data;
- 80000f8:	2aff      	cmp	r2, #255	; 0xff
- 80000fa:	d000      	beq.n	80000fe <main+0xbe>
- 80000fc:	b293      	uxth	r3, r2
+ 80000fc:	2aff      	cmp	r2, #255	; 0xff
+ 80000fe:	d000      	beq.n	8000102 <main+0xba>
+ 8000100:	b293      	uxth	r3, r2
 	data++;
 	size += 3;	// sizeByte typeByte .. CheckSummByte
 	
 	for(int i=1; i<size; i++)
- 80000fe:	2201      	movs	r2, #1
+ 8000102:	2201      	movs	r2, #1
 	while(!(UART->ISR & USART_ISR_RXNE_Msk));
 	*data = UART->RDR;
 	
 	uint16_t size = (*data == 0xFF) ? (1<<_PAGE_SIZE_POW) + 2 : *data;
 	data++;
 	size += 3;	// sizeByte typeByte .. CheckSummByte
- 8000100:	3303      	adds	r3, #3
+ 8000104:	3303      	adds	r3, #3
 	
 	for(int i=1; i<size; i++)
- 8000102:	429a      	cmp	r2, r3
- 8000104:	da07      	bge.n	8000116 <main+0xd6>
+ 8000106:	429a      	cmp	r2, r3
+ 8000108:	da07      	bge.n	800011a <main+0xd2>
 	{
 		while(!(UART->ISR & USART_ISR_RXNE_Msk)); 
- 8000106:	69e9      	ldr	r1, [r5, #28]
- 8000108:	0689      	lsls	r1, r1, #26
- 800010a:	d5fc      	bpl.n	8000106 <main+0xc6>
+ 800010a:	69e9      	ldr	r1, [r5, #28]
+ 800010c:	0689      	lsls	r1, r1, #26
+ 800010e:	d5fc      	bpl.n	800010a <main+0xc2>
 		*(data++) = UART->RDR;
- 800010c:	4925      	ldr	r1, [pc, #148]	; (80001a4 <main+0x164>)
- 800010e:	6a49      	ldr	r1, [r1, #36]	; 0x24
- 8000110:	5481      	strb	r1, [r0, r2]
+ 8000110:	4925      	ldr	r1, [pc, #148]	; (80001a8 <main+0x160>)
+ 8000112:	6a49      	ldr	r1, [r1, #36]	; 0x24
+ 8000114:	5481      	strb	r1, [r0, r2]
 	
 	uint16_t size = (*data == 0xFF) ? (1<<_PAGE_SIZE_POW) + 2 : *data;
 	data++;
 	size += 3;	// sizeByte typeByte .. CheckSummByte
 	
 	for(int i=1; i<size; i++)
- 8000112:	3201      	adds	r2, #1
- 8000114:	e7f5      	b.n	8000102 <main+0xc2>
- 8000116:	2200      	movs	r2, #0
- 8000118:	1c11      	adds	r1, r2, #0
+ 8000116:	3201      	adds	r2, #1
+ 8000118:	e7f5      	b.n	8000106 <main+0xbe>
+ 800011a:	2200      	movs	r2, #0
+ 800011c:	1c11      	adds	r1, r2, #0
 	while (1)
 	{
 		size = ReceiveData(buff);
 		xor = 0;
 		for (i=0; i<size; i++)
 			xor ^= buff[i];
- 800011a:	5c87      	ldrb	r7, [r0, r2]
+ 800011e:	5c86      	ldrb	r6, [r0, r2]
 	static const uint8_t errType[] = {1, 0x7F, 2, 1^0x7F^2 };
 	while (1)
 	{
 		size = ReceiveData(buff);
 		xor = 0;
 		for (i=0; i<size; i++)
- 800011c:	3201      	adds	r2, #1
+ 8000120:	3201      	adds	r2, #1
 			xor ^= buff[i];
- 800011e:	4079      	eors	r1, r7
+ 8000122:	4071      	eors	r1, r6
 	static const uint8_t errType[] = {1, 0x7F, 2, 1^0x7F^2 };
 	while (1)
 	{
 		size = ReceiveData(buff);
 		xor = 0;
 		for (i=0; i<size; i++)
- 8000120:	429a      	cmp	r2, r3
- 8000122:	dbfa      	blt.n	800011a <main+0xda>
+ 8000124:	429a      	cmp	r2, r3
+ 8000126:	dbfa      	blt.n	800011e <main+0xd6>
 			xor ^= buff[i];
 		if (xor)
- 8000124:	2900      	cmp	r1, #0
- 8000126:	d002      	beq.n	800012e <main+0xee>
+ 8000128:	2900      	cmp	r1, #0
+ 800012a:	d001      	beq.n	8000130 <main+0xe8>
 		{					
 			SendData(errCS, sizeof(errCS));
- 8000128:	9801      	ldr	r0, [sp, #4]
- 800012a:	3009      	adds	r0, #9
- 800012c:	e00f      	b.n	800014e <main+0x10e>
+ 800012c:	482b      	ldr	r0, [pc, #172]	; (80001dc <main+0x194>)
+ 800012e:	e00f      	b.n	8000150 <main+0x108>
 			continue;
 		}
 		
 		if (buff[1] == 0x87)
- 800012e:	7843      	ldrb	r3, [r0, #1]
- 8000130:	2b87      	cmp	r3, #135	; 0x87
- 8000132:	d108      	bne.n	8000146 <main+0x106>
+ 8000130:	7843      	ldrb	r3, [r0, #1]
+ 8000132:	2b87      	cmp	r3, #135	; 0x87
+ 8000134:	d108      	bne.n	8000148 <main+0x100>
   \details Acts as a special kind of Data Memory Barrier.
            It completes when all explicit memory accesses before this instruction complete.
  */
 __STATIC_FORCEINLINE void __DSB(void)
 {
   __ASM volatile ("dsb 0xF":::"memory");
- 8000134:	f3bf 8f4f 	dsb	sy
+ 8000136:	f3bf 8f4f 	dsb	sy
  */
 __NO_RETURN __STATIC_INLINE void __NVIC_SystemReset(void)
 {
   __DSB();                                                          /* Ensure all outstanding memory accesses included
                                                                        buffered write are completed before reset */
   SCB->AIRCR  = ((0x5FAUL << SCB_AIRCR_VECTKEY_Pos) |
- 8000138:	4a27      	ldr	r2, [pc, #156]	; (80001d8 <main+0x198>)
- 800013a:	4b20      	ldr	r3, [pc, #128]	; (80001bc <main+0x17c>)
- 800013c:	60da      	str	r2, [r3, #12]
- 800013e:	f3bf 8f4f 	dsb	sy
+ 800013a:	4a29      	ldr	r2, [pc, #164]	; (80001e0 <main+0x198>)
+ 800013c:	4b20      	ldr	r3, [pc, #128]	; (80001c0 <main+0x178>)
+ 800013e:	60da      	str	r2, [r3, #12]
+ 8000140:	f3bf 8f4f 	dsb	sy
                  SCB_AIRCR_SYSRESETREQ_Msk);
   __DSB();                                                          /* Ensure completion of memory access */
 
   for(;;)                                                           /* wait until reset */
   {
     __NOP();
- 8000142:	46c0      	nop			; (mov r8, r8)
- 8000144:	e7fd      	b.n	8000142 <main+0x102>
+ 8000144:	46c0      	nop			; (mov r8, r8)
+ 8000146:	e7fd      	b.n	8000144 <main+0xfc>
 			NVIC_SystemReset();
 	
 		if (buff[1] != 0x88)
- 8000146:	2b88      	cmp	r3, #136	; 0x88
- 8000148:	d003      	beq.n	8000152 <main+0x112>
+ 8000148:	2b88      	cmp	r3, #136	; 0x88
+ 800014a:	d003      	beq.n	8000154 <main+0x10c>
 		{			
 			SendData(errType, sizeof(errType));
- 800014a:	9801      	ldr	r0, [sp, #4]
- 800014c:	300d      	adds	r0, #13
- 800014e:	2104      	movs	r1, #4
- 8000150:	e01f      	b.n	8000192 <main+0x152>
+ 800014c:	4823      	ldr	r0, [pc, #140]	; (80001dc <main+0x194>)
+ 800014e:	3004      	adds	r0, #4
+ 8000150:	2104      	movs	r1, #4
+ 8000152:	e01f      	b.n	8000194 <main+0x14c>
 	return size;
 }
 
 static void FlashWriteWord(uint32_t addr, uint32_t data, uint32_t isErase) // 0 или ERASE
 {		
 	FLASH->PECR = isErase;
- 8000152:	2782      	movs	r7, #130	; 0x82
+ 8000154:	2682      	movs	r6, #130	; 0x82
 		{			
 			SendData(errType, sizeof(errType));
 			continue;
 		}
 	
 		uint32_t addr = _FW_PAGE_START + (((buff[2]<<8) + buff[3]) << _PAGE_SIZE_POW);
- 8000154:	7883      	ldrb	r3, [r0, #2]
- 8000156:	78c2      	ldrb	r2, [r0, #3]
- 8000158:	021b      	lsls	r3, r3, #8
- 800015a:	189b      	adds	r3, r3, r2
- 800015c:	4a16      	ldr	r2, [pc, #88]	; (80001b8 <main+0x178>)
- 800015e:	01db      	lsls	r3, r3, #7
- 8000160:	189a      	adds	r2, r3, r2
+ 8000156:	7883      	ldrb	r3, [r0, #2]
+ 8000158:	78c2      	ldrb	r2, [r0, #3]
+ 800015a:	021b      	lsls	r3, r3, #8
+ 800015c:	189b      	adds	r3, r3, r2
+ 800015e:	4a17      	ldr	r2, [pc, #92]	; (80001bc <main+0x174>)
+ 8000160:	01db      	lsls	r3, r3, #7
+ 8000162:	189a      	adds	r2, r3, r2
 	return size;
 }
 
 static void FlashWriteWord(uint32_t addr, uint32_t data, uint32_t isErase) // 0 или ERASE
 {		
 	FLASH->PECR = isErase;
- 8000162:	00bf      	lsls	r7, r7, #2
- 8000164:	6067      	str	r7, [r4, #4]
+ 8000164:	00b6      	lsls	r6, r6, #2
+ 8000166:	6066      	str	r6, [r4, #4]
 	*(uint32_t *)addr = data;
- 8000166:	6011      	str	r1, [r2, #0]
+ 8000168:	6011      	str	r1, [r2, #0]
 	while ( (FLASH->SR & FLASH_SR_BSY) );
- 8000168:	69a1      	ldr	r1, [r4, #24]
- 800016a:	07c9      	lsls	r1, r1, #31
- 800016c:	d4fc      	bmi.n	8000168 <main+0x128>
- 800016e:	491b      	ldr	r1, [pc, #108]	; (80001dc <main+0x19c>)
- 8000170:	185f      	adds	r7, r3, r1
- 8000172:	4e1b      	ldr	r6, [pc, #108]	; (80001e0 <main+0x1a0>)
- 8000174:	1ad1      	subs	r1, r2, r3
- 8000176:	1989      	adds	r1, r1, r6
+ 800016a:	69a1      	ldr	r1, [r4, #24]
+ 800016c:	07c9      	lsls	r1, r1, #31
+ 800016e:	d4fc      	bmi.n	800016a <main+0x122>
+ 8000170:	491c      	ldr	r1, [pc, #112]	; (80001e4 <main+0x19c>)
+ 8000172:	185e      	adds	r6, r3, r1
+ 8000174:	4f1c      	ldr	r7, [pc, #112]	; (80001e8 <main+0x1a0>)
+ 8000176:	1ad1      	subs	r1, r2, r3
+ 8000178:	19c9      	adds	r1, r1, r7
 	return size;
 }
 
 static void FlashWriteWord(uint32_t addr, uint32_t data, uint32_t isErase) // 0 или ERASE
 {		
 	FLASH->PECR = isErase;
- 8000178:	2600      	movs	r6, #0
+ 800017a:	2700      	movs	r7, #0
 		uint32_t addr = _FW_PAGE_START + (((buff[2]<<8) + buff[3]) << _PAGE_SIZE_POW);
 		FlashWriteWord(addr, 0, ERASE);
 		uint32_t word;
 		for(i=0; i < (1<<_PAGE_SIZE_POW); i+=4)
 		{			
 			word = /*__REV*/(*(uint32_t*)&buff[4+i]);
- 800017a:	5841      	ldr	r1, [r0, r1]
+ 800017c:	5841      	ldr	r1, [r0, r1]
 	return size;
 }
 
 static void FlashWriteWord(uint32_t addr, uint32_t data, uint32_t isErase) // 0 или ERASE
 {		
 	FLASH->PECR = isErase;
- 800017c:	6066      	str	r6, [r4, #4]
+ 800017e:	6067      	str	r7, [r4, #4]
 	*(uint32_t *)addr = data;
- 800017e:	6011      	str	r1, [r2, #0]
+ 8000180:	6011      	str	r1, [r2, #0]
 	while ( (FLASH->SR & FLASH_SR_BSY) );
- 8000180:	69a1      	ldr	r1, [r4, #24]
- 8000182:	07c9      	lsls	r1, r1, #31
- 8000184:	d4fc      	bmi.n	8000180 <main+0x140>
+ 8000182:	69a1      	ldr	r1, [r4, #24]
+ 8000184:	07c9      	lsls	r1, r1, #31
+ 8000186:	d4fc      	bmi.n	8000182 <main+0x13a>
 		uint32_t word;
 		for(i=0; i < (1<<_PAGE_SIZE_POW); i+=4)
 		{			
 			word = /*__REV*/(*(uint32_t*)&buff[4+i]);
 			FlashWriteWord(addr, word, 0);
 			addr += 4;
- 8000186:	3204      	adds	r2, #4
+ 8000188:	3204      	adds	r2, #4
 		}
 	
 		uint32_t addr = _FW_PAGE_START + (((buff[2]<<8) + buff[3]) << _PAGE_SIZE_POW);
 		FlashWriteWord(addr, 0, ERASE);
 		uint32_t word;
 		for(i=0; i < (1<<_PAGE_SIZE_POW); i+=4)
- 8000188:	42ba      	cmp	r2, r7
- 800018a:	d1f2      	bne.n	8000172 <main+0x132>
+ 800018a:	42b2      	cmp	r2, r6
+ 800018c:	d1f2      	bne.n	8000174 <main+0x12c>
+			word = /*__REV*/(*(uint32_t*)&buff[4+i]);
+			FlashWriteWord(addr, word, 0);
 			addr += 4;
 		}	
-		*(uint32_t*)buff = 0x00080801;// 0x01 0x08, 0x08, 0xXX
-		//buff[1] = 0x08;
-		//buff[2] = 0x08;
+		*(uint32_t*)buff = (0x01 << 0) + (0x08 << 8) + ((0x01^0x08)<<16);// 0x01 0x08, 0x08, 0xXX			
 		SendData(buff, 3);
- 800018c:	2103      	movs	r1, #3
+ 800018e:	2103      	movs	r1, #3
 		{			
 			word = /*__REV*/(*(uint32_t*)&buff[4+i]);
 			FlashWriteWord(addr, word, 0);
 			addr += 4;
 		}	
-		*(uint32_t*)buff = 0x00080801;// 0x01 0x08, 0x08, 0xXX
- 800018e:	4b15      	ldr	r3, [pc, #84]	; (80001e4 <main+0x1a4>)
- 8000190:	9303      	str	r3, [sp, #12]
-		//buff[1] = 0x08;
-		//buff[2] = 0x08;
+		*(uint32_t*)buff = (0x01 << 0) + (0x08 << 8) + ((0x01^0x08)<<16);// 0x01 0x08, 0x08, 0xXX			
+ 8000190:	4b16      	ldr	r3, [pc, #88]	; (80001ec <main+0x1a4>)
+ 8000192:	9301      	str	r3, [sp, #4]
 		SendData(buff, 3);
- 8000192:	f7ff ff41 	bl	8000018 <SendData>
- 8000196:	e7a4      	b.n	80000e2 <main+0xa2>
- 8000198:	fffffddc 	.word	0xfffffddc
- 800019c:	e000e010 	.word	0xe000e010
- 80001a0:	40021000 	.word	0x40021000
- 80001a4:	40004800 	.word	0x40004800
- 80001a8:	0000d055 	.word	0x0000d055
- 80001ac:	cfffffff 	.word	0xcfffffff
- 80001b0:	f0ffffff 	.word	0xf0ffffff
- 80001b4:	080001e8 	.word	0x080001e8
- 80001b8:	08000200 	.word	0x08000200
- 80001bc:	e000ed00 	.word	0xe000ed00
- 80001c0:	08000204 	.word	0x08000204
- 80001c4:	40022000 	.word	0x40022000
- 80001c8:	89abcdef 	.word	0x89abcdef
- 80001cc:	02030405 	.word	0x02030405
- 80001d0:	8c9daebf 	.word	0x8c9daebf
- 80001d4:	13141516 	.word	0x13141516
- 80001d8:	05fa0004 	.word	0x05fa0004
- 80001dc:	08000280 	.word	0x08000280
- 80001e0:	f7fffe04 	.word	0xf7fffe04
- 80001e4:	00080801 	.word	0x00080801
+ 8000194:	f7ff ff40 	bl	8000018 <SendData>
+ 8000198:	e7a5      	b.n	80000e6 <main+0x9e>
+ 800019a:	46c0      	nop			; (mov r8, r8)
+ 800019c:	fffffde4 	.word	0xfffffde4
+ 80001a0:	e000e010 	.word	0xe000e010
+ 80001a4:	40021000 	.word	0x40021000
+ 80001a8:	40004800 	.word	0x40004800
+ 80001ac:	0000d055 	.word	0x0000d055
+ 80001b0:	cfffffff 	.word	0xcfffffff
+ 80001b4:	f0ffffff 	.word	0xf0ffffff
+ 80001b8:	080001f6 	.word	0x080001f6
+ 80001bc:	08000200 	.word	0x08000200
+ 80001c0:	e000ed00 	.word	0xe000ed00
+ 80001c4:	08000204 	.word	0x08000204
+ 80001c8:	40022000 	.word	0x40022000
+ 80001cc:	89abcdef 	.word	0x89abcdef
+ 80001d0:	02030405 	.word	0x02030405
+ 80001d4:	8c9daebf 	.word	0x8c9daebf
+ 80001d8:	13141516 	.word	0x13141516
+ 80001dc:	08000040 	.word	0x08000040
+ 80001e0:	05fa0004 	.word	0x05fa0004
+ 80001e4:	08000280 	.word	0x08000280
+ 80001e8:	f7fffe04 	.word	0xf7fffe04
+ 80001ec:	00090801 	.word	0x00090801

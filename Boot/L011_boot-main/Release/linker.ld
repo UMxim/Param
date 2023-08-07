@@ -1,6 +1,7 @@
 MEMORY{
-	ROM(rx) : ORIGIN = 0x08000000, LENGTH = 2K
-	SRAM (rwx):     ORIGIN = 0x20000000, LENGTH = 2K
+	ROM(rx) 	: ORIGIN = 0x08000000, LENGTH = 502
+	CONSTS(rx) 	: ORIGIN = 0x08000000 + 502, LENGTH = 10
+	SRAM (rwx)	: ORIGIN = 0x20000000, LENGTH = 2K
 }
 
 _estack = LENGTH(SRAM) + ORIGIN(SRAM);
@@ -12,6 +13,13 @@ SECTIONS{
 	
 	.text : {
         . = ALIGN(4);
-        *(.text)		
+        *(.text)
+		*(.rodata)
     } >ROM	
+	
+	.consts :
+	{
+		. = ALIGN(2);
+        KEEP(*(.consts))
+	} >CONSTS
 }

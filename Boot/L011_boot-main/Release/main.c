@@ -95,6 +95,30 @@
 #define _PAGES_FOR_WRITE 	((0x08000000 + _FLASH_SIZE - _FW_PAGE_START) >> _PAGE_SIZE_POW)
 #define ERASE 				(FLASH_PECR_ERASE | FLASH_PECR_PROG)
 
+__attribute__((section(".consts"), used)) const struct
+{	
+	uint8_t len;
+	uint8_t type;
+	uint8_t bootVer;
+	uint8_t hwType;
+	uint8_t hwVer;
+	uint8_t sectorSize;
+	uint8_t sectorNum_hi;
+	uint8_t sectorNum_lo;
+	uint8_t cs;
+}	vers = 
+{
+	0x06, 	// len
+	0x07, 	// type
+	_BOOT_VER, 
+	_HW_TYPE, 
+	_HW_VER, 
+	_PAGE_SIZE_POW, 
+	_PAGES_FOR_WRITE >> 8,
+	_PAGES_FOR_WRITE,
+	0x06 ^ 0x07 ^ _BOOT_VER ^ _HW_TYPE ^ _HW_VER ^ _PAGE_SIZE_POW ^ (_PAGES_FOR_WRITE >> 8) ^ _PAGES_FOR_WRITE	// xor
+};
+
 static void SendData(const uint8_t* data, uint32_t size)
 {
 	// enable Tx
@@ -110,7 +134,7 @@ static void SendData(const uint8_t* data, uint32_t size)
 	//UART->CR1 = USART_CR1_UE;
 }
 
-static uint16_t ReceiveData(uint8_t *data)
+static inline uint16_t ReceiveData(uint8_t *data)
 {	
 	UART->CR1 = USART_CR1_RE | USART_CR1_UE;
 	while(!(UART->ISR & USART_ISR_RXNE_Msk));
@@ -174,9 +198,8 @@ int main(void)
 	//
 	uint32_t buff32[(1<<_PAGE_SIZE_POW) + 5]; // потому-что памяти завались....
 	uint8_t *buff = (uint8_t *)buff32;
-	static const uint8_t firstPacket[] = {0x06, 0x07, _BOOT_VER, _HW_TYPE, _HW_VER, _PAGE_SIZE_POW, _PAGES_FOR_WRITE >> 8, _PAGES_FOR_WRITE,
-										  0x06^ 0x07 ^_BOOT_VER ^_HW_TYPE ^_HW_VER ^_PAGE_SIZE_POW^(_PAGES_FOR_WRITE >> 8)^_PAGES_FOR_WRITE};
-	SendData((void*)firstPacket, sizeof(firstPacket));
+	
+	SendData((const void *)&vers, sizeof(vers));
 	
 	UART->CR1 = USART_CR1_RE | USART_CR1_UE;
 	
@@ -226,10 +249,9 @@ int main(void)
 			FlashWriteWord(addr, word, 0);
 			addr += 4;
 		}	
-		*(uint32_t*)buff = 0x00080801;// 0x01 0x08, 0x08, 0xXX
-		//buff[1] = 0x08;
-		//buff[2] = 0x08;
+		*(uint32_t*)buff = (0x01 << 0) + (0x08 << 8) + ((0x01^0x08)<<16);// 0x01 0x08, 0x08, 0xXX			
 		SendData(buff, 3);
+		
 	}	
 }
 

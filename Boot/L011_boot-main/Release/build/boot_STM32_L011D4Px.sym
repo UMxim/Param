@@ -4,8 +4,8 @@
 08000010 W NMI_Handler
 08000012 T Reset_Handler
 08000018 t SendData
-08000040 T main
-080001e8 r firstPacket.4539
-080001f1 r errCS.4546
-080001f5 r errType.4547
+08000040 t errCS.4556
+08000044 t errType.4557
+08000048 T main
+080001f6 R vers
 20000800 A _estack

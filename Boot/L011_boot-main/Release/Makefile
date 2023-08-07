@@ -33,7 +33,7 @@ MCU_FLAGS                   = -mcpu=cortex-m0 -mthumb -D__CORTEX_M0 -std=c11
 
 FLAGS_CC                    = $(INCLUDES) $(DEFINES) -I. -O$(OPTIMIZATION_FLAG) $(MCU_FLAGS) -g -nodefaultlibs -nostdlib
 
-FLAGS_LD                    = -Wl,--gc-sections -nostartfiles -nodefaultlibs -nostdlib
+FLAGS_LD                    = -Wl,--gc-sections -nostartfiles -nodefaultlibs -nostdlib -Wl,-Map=$(BUILD_DIR)/$(TARGET_NAME).map
 
 all: $(TARGET_NAME).elf
 

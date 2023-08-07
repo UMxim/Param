@@ -15,7 +15,7 @@ static const params_t paramsC[] =	{
 	PARAM_PARAM_ARR	}; // параметры
 	
 static const params_t statisticC[] = {
-	PARAM_STAT_ARR }; // статистика
+	//PARAM_STAT_ARR }; // статистика
 
 uint32_t params[PARAM_LIST_NUM]; // параметры
 	

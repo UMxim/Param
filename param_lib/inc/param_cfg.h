@@ -20,8 +20,6 @@
 
 */
 
-
-
 #define PARAM_IS_STATIC_BUFF 			1 // 1- сразу выделяем массив на 260Б, 0- будем использовать malloc 
 #define PARAM_IS_SELFCFG_SYSTICK	1	// 1 - сконфигурируем и будем использовать Systick 0-Вызов пользователем Param_Timer_callback
  
