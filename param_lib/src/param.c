@@ -15,7 +15,7 @@ static const params_t paramsC[] =	{
 	PARAM_PARAM_ARR	}; // параметры
 	
 static const params_t statisticC[] = {
-	//PARAM_STAT_ARR }; // статистика
+	PARAM_STAT_ARR }; // статистика
 
 uint32_t params[PARAM_LIST_NUM]; // параметры
 	
@@ -57,7 +57,7 @@ static void Update_Stat_(void)
 }
 static void SetError(uint8_t errN)
 {
-	
+	 
 }
 
 static void SendBuff_(void)
@@ -72,7 +72,7 @@ static void ParseBuff_(void)
 }
 
 
-void Param_Init(void)
+void Param_Init(void *dump, int dump_size)
 {	
 	Param_HAL_Init();
 	Param_HAL_RegisterCallback_Uart_Rx(Param_RecieveByte_Callback);

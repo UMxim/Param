@@ -12,7 +12,7 @@ extern uint32_t params[]; // параметры
 extern uint32_t statistic[]; // статистика
 
 // Инициализация. Вызвать после инициализации железа но до других модулей (Заполняет параметры сохраненными значениями!!!)
-void Param_Init(void *dump, size_t dump_size);
+void Param_Init(void *dump, int dump_size);
 
 // А её нет! Все происходит по прерываниям! Даже запись во флеш (все равно затупим)
 //void Param_Cycle(void);

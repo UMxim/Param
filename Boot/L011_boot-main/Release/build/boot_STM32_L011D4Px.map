@@ -84,14 +84,14 @@ OUTPUT(./build/boot_STM32_L011D4Px.elf elf32-littlearm)
  .debug_aranges
                 0x00000020       0x28 ./build/main.o
 
-.debug_line     0x00000000      0x213
+.debug_line     0x00000000      0x212
  .debug_line    0x00000000       0x3f ./build/init.o
- .debug_line    0x0000003f      0x1d4 ./build/main.o
+ .debug_line    0x0000003f      0x1d3 ./build/main.o
 
-.debug_str      0x00000000      0x3d0
- .debug_str     0x00000000       0xe5 ./build/init.o
- .debug_str     0x000000e5      0x2eb ./build/main.o
-                                0x3ec (size before relaxing)
+.debug_str      0x00000000      0x3da
+ .debug_str     0x00000000       0xef ./build/init.o
+ .debug_str     0x000000ef      0x2eb ./build/main.o
+                                0x3f6 (size before relaxing)
 
 .comment        0x00000000       0x70
  .comment       0x00000000       0x70 ./build/init.o

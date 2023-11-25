@@ -17,19 +17,19 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   6 .debug_aranges 00000048  00000000  00000000  00008dbf  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   00000213  00000000  00000000  00008e07  2**0
+  7 .debug_line   00000212  00000000  00000000  00008e07  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_str    000003d0  00000000  00000000  0000901a  2**0
+  8 .debug_str    000003da  00000000  00000000  00009019  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .comment      00000070  00000000  00000000  000093ea  2**0
+  9 .comment      00000070  00000000  00000000  000093f3  2**0
                   CONTENTS, READONLY
- 10 .ARM.attributes 00000031  00000000  00000000  0000945a  2**0
+ 10 .ARM.attributes 00000031  00000000  00000000  00009463  2**0
                   CONTENTS, READONLY
- 11 .debug_frame  00000074  00000000  00000000  0000948c  2**2
+ 11 .debug_frame  00000074  00000000  00000000  00009494  2**2
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    0000033a  00000000  00000000  00009500  2**0
+ 12 .debug_loc    0000033a  00000000  00000000  00009508  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00000060  00000000  00000000  0000983a  2**0
+ 13 .debug_ranges 00000060  00000000  00000000  00009842  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -59,7 +59,7 @@ void __attribute__((naked, noreturn)) Reset_Handler()
 static void SendData(const uint8_t* data, uint32_t size)
 {
 	// enable Tx
-	UART->CR1 = USART_CR1_TE | USART_CR1_UE;
+	BOOT_UART->CR1 = USART_CR1_TE | USART_CR1_UE;
  8000018:	2209      	movs	r2, #9
  800001a:	4b08      	ldr	r3, [pc, #32]	; (800003c <SendData+0x24>)
  800001c:	1841      	adds	r1, r0, r1
@@ -68,10 +68,10 @@ static void SendData(const uint8_t* data, uint32_t size)
  8000020:	4288      	cmp	r0, r1
  8000022:	d006      	beq.n	8000032 <SendData+0x1a>
 	{
-		UART->TDR = *(data++);		
+		BOOT_UART->TDR = *(data++);		
  8000024:	7802      	ldrb	r2, [r0, #0]
  8000026:	629a      	str	r2, [r3, #40]	; 0x28
-		while(!(UART->ISR & USART_ISR_TXE_Msk));
+		while(!(BOOT_UART->ISR & USART_ISR_TXE_Msk));
  8000028:	69da      	ldr	r2, [r3, #28]
  800002a:	0612      	lsls	r2, r2, #24
  800002c:	d5fc      	bpl.n	8000028 <SendData+0x10>
@@ -79,7 +79,7 @@ static void SendData(const uint8_t* data, uint32_t size)
  8000030:	e7f6      	b.n	8000020 <SendData+0x8>
 	}
 	
-	while(!(UART->ISR & USART_ISR_TC_Msk));
+	while(!(BOOT_UART->ISR & USART_ISR_TC_Msk));
  8000032:	69da      	ldr	r2, [r3, #28]
  8000034:	0652      	lsls	r2, r2, #25
  8000036:	d5fc      	bpl.n	8000032 <SendData+0x1a>
@@ -106,7 +106,7 @@ int main(void)
 	// SysTick
 	SysTick->LOAD = ANSWER_WAIT_MS * SYS_CLK_FREQ_KHZ;
  8000048:	23fa      	movs	r3, #250	; 0xfa
-    __set_MSP(*(__IO uint32_t*) _FW_PAGE_START);          //устанавливаем SP приложения                                           
+    __set_MSP(*(__IO uint32_t*) _BOOT_FW_PAGE_START);          //устанавливаем SP приложения                                           
     Jump_To_Application();		                        //запускаем приложение	
 }
 
@@ -119,7 +119,7 @@ int main(void)
 	// SysTick
 	SysTick->LOAD = ANSWER_WAIT_MS * SYS_CLK_FREQ_KHZ;
  800004e:	031b      	lsls	r3, r3, #12
-    __set_MSP(*(__IO uint32_t*) _FW_PAGE_START);          //устанавливаем SP приложения                                           
+    __set_MSP(*(__IO uint32_t*) _BOOT_FW_PAGE_START);          //устанавливаем SP приложения                                           
     Jump_To_Application();		                        //запускаем приложение	
 }
 
@@ -172,49 +172,49 @@ int main(void)
 	RCC->IOPENR = RCC_IOPENR_GPIOAEN;
  8000066:	2201      	movs	r2, #1
  8000068:	62da      	str	r2, [r3, #44]	; 0x2c
-	UART->CR3 = USART_CR3_HDSEL;
+	BOOT_UART->CR3 = USART_CR3_HDSEL;
  800006a:	2308      	movs	r3, #8
  800006c:	4d4e      	ldr	r5, [pc, #312]	; (80001a8 <main+0x160>)
-	UART->BRR = UART_BRR;
+	BOOT_UART->BRR = BOOT_UART_BRR;
 	// GPIO	
-	UART_PORT->OTYPER |= GPIO_OPEN_DRAIN; // OpenDrain 1
+	BOOT_UART_PORT->OTYPER |= BOOT_GPIO_OPEN_DRAIN; // OpenDrain 1
  800006e:	2180      	movs	r1, #128	; 0x80
 	SysTick->VAL = 0;
 	SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk;
 	// UART
 	RCC->APB1ENR = RCC_APB1ENR_LPUART1EN | RCC_APB1ENR_USART2EN; 
 	RCC->IOPENR = RCC_IOPENR_GPIOAEN;
-	UART->CR3 = USART_CR3_HDSEL;
+	BOOT_UART->CR3 = USART_CR3_HDSEL;
  8000070:	60ab      	str	r3, [r5, #8]
-	UART->BRR = UART_BRR;
+	BOOT_UART->BRR = BOOT_UART_BRR;
  8000072:	4b4e      	ldr	r3, [pc, #312]	; (80001ac <main+0x164>)
 	// GPIO	
-	UART_PORT->OTYPER |= GPIO_OPEN_DRAIN; // OpenDrain 1
-	UPDATE_MASK(UART_PORT->PUPDR, GPIO_PULL_UP_MSK, GPIO_PULL_UP_VAL);		//2
+	BOOT_UART_PORT->OTYPER |= BOOT_GPIO_OPEN_DRAIN; // OpenDrain 1
+	UPDATE_MASK(BOOT_UART_PORT->PUPDR, BOOT_GPIO_PULL_UP_MSK, BOOT_GPIO_PULL_UP_VAL);		//2
  8000074:	2080      	movs	r0, #128	; 0x80
 	SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk;
 	// UART
 	RCC->APB1ENR = RCC_APB1ENR_LPUART1EN | RCC_APB1ENR_USART2EN; 
 	RCC->IOPENR = RCC_IOPENR_GPIOAEN;
-	UART->CR3 = USART_CR3_HDSEL;
-	UART->BRR = UART_BRR;
+	BOOT_UART->CR3 = USART_CR3_HDSEL;
+	BOOT_UART->BRR = BOOT_UART_BRR;
  8000076:	60eb      	str	r3, [r5, #12]
 	// GPIO	
-	UART_PORT->OTYPER |= GPIO_OPEN_DRAIN; // OpenDrain 1
+	BOOT_UART_PORT->OTYPER |= BOOT_GPIO_OPEN_DRAIN; // OpenDrain 1
  8000078:	23a0      	movs	r3, #160	; 0xa0
  800007a:	05db      	lsls	r3, r3, #23
  800007c:	685a      	ldr	r2, [r3, #4]
  800007e:	01c9      	lsls	r1, r1, #7
  8000080:	430a      	orrs	r2, r1
  8000082:	605a      	str	r2, [r3, #4]
-	UPDATE_MASK(UART_PORT->PUPDR, GPIO_PULL_UP_MSK, GPIO_PULL_UP_VAL);		//2
+	UPDATE_MASK(BOOT_UART_PORT->PUPDR, BOOT_GPIO_PULL_UP_MSK, BOOT_GPIO_PULL_UP_VAL);		//2
  8000084:	68d9      	ldr	r1, [r3, #12]
  8000086:	4a4a      	ldr	r2, [pc, #296]	; (80001b0 <main+0x168>)
  8000088:	0540      	lsls	r0, r0, #21
  800008a:	4011      	ands	r1, r2
  800008c:	4301      	orrs	r1, r0
  800008e:	60d9      	str	r1, [r3, #12]
-	UPDATE_MASK(UART_PORT->AFR[GPIO_AFR_NUM], GPIO_AFR_MSK, GPIO_AFR << GPIO_AFR_POS);
+	UPDATE_MASK(BOOT_UART_PORT->AFR[BOOT_GPIO_AFR_NUM], BOOT_GPIO_AFR_MSK, BOOT_GPIO_AFR << BOOT_GPIO_AFR_POS);
  8000090:	6a58      	ldr	r0, [r3, #36]	; 0x24
  8000092:	4948      	ldr	r1, [pc, #288]	; (80001b4 <main+0x16c>)
  8000094:	4001      	ands	r1, r0
@@ -222,21 +222,21 @@ int main(void)
  8000098:	04c0      	lsls	r0, r0, #19
  800009a:	4301      	orrs	r1, r0
  800009c:	6259      	str	r1, [r3, #36]	; 0x24
-	UPDATE_MASK(UART_PORT->MODER, GPIO_MODER_MSK, GPIO_MODER_VAL);
+	UPDATE_MASK(BOOT_UART_PORT->MODER, BOOT_GPIO_MODER_MSK, BOOT_GPIO_MODER_VAL);
  800009e:	6819      	ldr	r1, [r3, #0]
 	
 	//
-	uint32_t buff32[(1<<_PAGE_SIZE_POW) + 5]; // потому-что памяти завались....
+	uint32_t buff32[(1<<_BOOT_PAGE_SIZE_POW) + 5]; // потому-что памяти завались....
 	uint8_t *buff = (uint8_t *)buff32;
 	
 	SendData((const void *)&vers, sizeof(vers));
  80000a0:	4845      	ldr	r0, [pc, #276]	; (80001b8 <main+0x170>)
-	UART->BRR = UART_BRR;
+	BOOT_UART->BRR = BOOT_UART_BRR;
 	// GPIO	
-	UART_PORT->OTYPER |= GPIO_OPEN_DRAIN; // OpenDrain 1
-	UPDATE_MASK(UART_PORT->PUPDR, GPIO_PULL_UP_MSK, GPIO_PULL_UP_VAL);		//2
-	UPDATE_MASK(UART_PORT->AFR[GPIO_AFR_NUM], GPIO_AFR_MSK, GPIO_AFR << GPIO_AFR_POS);
-	UPDATE_MASK(UART_PORT->MODER, GPIO_MODER_MSK, GPIO_MODER_VAL);
+	BOOT_UART_PORT->OTYPER |= BOOT_GPIO_OPEN_DRAIN; // OpenDrain 1
+	UPDATE_MASK(BOOT_UART_PORT->PUPDR, BOOT_GPIO_PULL_UP_MSK, BOOT_GPIO_PULL_UP_VAL);		//2
+	UPDATE_MASK(BOOT_UART_PORT->AFR[BOOT_GPIO_AFR_NUM], BOOT_GPIO_AFR_MSK, BOOT_GPIO_AFR << BOOT_GPIO_AFR_POS);
+	UPDATE_MASK(BOOT_UART_PORT->MODER, BOOT_GPIO_MODER_MSK, BOOT_GPIO_MODER_VAL);
  80000a2:	400a      	ands	r2, r1
  80000a4:	2180      	movs	r1, #128	; 0x80
  80000a6:	0589      	lsls	r1, r1, #22
@@ -244,17 +244,17 @@ int main(void)
  80000aa:	601a      	str	r2, [r3, #0]
 	
 	//
-	uint32_t buff32[(1<<_PAGE_SIZE_POW) + 5]; // потому-что памяти завались....
+	uint32_t buff32[(1<<_BOOT_PAGE_SIZE_POW) + 5]; // потому-что памяти завались....
 	uint8_t *buff = (uint8_t *)buff32;
 	
 	SendData((const void *)&vers, sizeof(vers));
  80000ac:	2109      	movs	r1, #9
  80000ae:	f7ff ffb3 	bl	8000018 <SendData>
 	
-	UART->CR1 = USART_CR1_RE | USART_CR1_UE;
+	BOOT_UART->CR1 = USART_CR1_RE | USART_CR1_UE;
  80000b2:	602e      	str	r6, [r5, #0]
 	
-	while(!(UART->ISR & USART_ISR_RXNE_Msk))
+	while(!(BOOT_UART->ISR & USART_ISR_RXNE_Msk))
  80000b4:	69eb      	ldr	r3, [r5, #28]
  80000b6:	069b      	lsls	r3, r3, #26
  80000b8:	d40c      	bmi.n	80000d4 <main+0x8c>
@@ -268,14 +268,14 @@ int main(void)
     typedef void(*pFunction)(void);//объявляем пользовательский тип
     pFunction Jump_To_Application;//и создаём переменную этого типа
 		
-		SCB->VTOR = _FW_PAGE_START;
+		SCB->VTOR = _BOOT_FW_PAGE_START;
  80000c0:	4b3e      	ldr	r3, [pc, #248]	; (80001bc <main+0x174>)
  80000c2:	4a3f      	ldr	r2, [pc, #252]	; (80001c0 <main+0x178>)
  80000c4:	6093      	str	r3, [r2, #8]
 	
-    app_jump_address = *( uint32_t*) (_FW_PAGE_START + 4);    //извлекаем адрес перехода из вектора Reset
+    app_jump_address = *( uint32_t*) (_BOOT_FW_PAGE_START + 4);    //извлекаем адрес перехода из вектора Reset
     Jump_To_Application = (pFunction)app_jump_address;            //приводим его к пользовательскому типу
-    __set_MSP(*(__IO uint32_t*) _FW_PAGE_START);          //устанавливаем SP приложения                                           
+    __set_MSP(*(__IO uint32_t*) _BOOT_FW_PAGE_START);          //устанавливаем SP приложения                                           
  80000c6:	681b      	ldr	r3, [r3, #0]
   \details Assigns the given value to the Main Stack Pointer (MSP).
   \param [in]    topOfMainStack  Main Stack Pointer value to set
@@ -287,12 +287,12 @@ __STATIC_FORCEINLINE void __set_MSP(uint32_t topOfMainStack)
     typedef void(*pFunction)(void);//объявляем пользовательский тип
     pFunction Jump_To_Application;//и создаём переменную этого типа
 		
-		SCB->VTOR = _FW_PAGE_START;
+		SCB->VTOR = _BOOT_FW_PAGE_START;
 	
-    app_jump_address = *( uint32_t*) (_FW_PAGE_START + 4);    //извлекаем адрес перехода из вектора Reset
+    app_jump_address = *( uint32_t*) (_BOOT_FW_PAGE_START + 4);    //извлекаем адрес перехода из вектора Reset
  80000cc:	4b3d      	ldr	r3, [pc, #244]	; (80001c4 <main+0x17c>)
     Jump_To_Application = (pFunction)app_jump_address;            //приводим его к пользовательскому типу
-    __set_MSP(*(__IO uint32_t*) _FW_PAGE_START);          //устанавливаем SP приложения                                           
+    __set_MSP(*(__IO uint32_t*) _BOOT_FW_PAGE_START);          //устанавливаем SP приложения                                           
     Jump_To_Application();		                        //запускаем приложение	
  80000ce:	681b      	ldr	r3, [r3, #0]
  80000d0:	4798      	blx	r3
@@ -320,30 +320,30 @@ __STATIC_FORCEINLINE void __set_MSP(uint32_t topOfMainStack)
 
 static inline uint16_t ReceiveData(uint8_t *data)
 {	
-	UART->CR1 = USART_CR1_RE | USART_CR1_UE;
+	BOOT_UART->CR1 = USART_CR1_RE | USART_CR1_UE;
  80000e6:	2305      	movs	r3, #5
  80000e8:	602b      	str	r3, [r5, #0]
-	while(!(UART->ISR & USART_ISR_RXNE_Msk));
+	while(!(BOOT_UART->ISR & USART_ISR_RXNE_Msk));
  80000ea:	69eb      	ldr	r3, [r5, #28]
  80000ec:	069b      	lsls	r3, r3, #26
  80000ee:	d5fc      	bpl.n	80000ea <main+0xa2>
-	*data = UART->RDR;
+	*data = BOOT_UART->RDR;
  80000f0:	4b2d      	ldr	r3, [pc, #180]	; (80001a8 <main+0x160>)
  80000f2:	a801      	add	r0, sp, #4
  80000f4:	6a5a      	ldr	r2, [r3, #36]	; 0x24
 	
-	uint16_t size = (*data == 0xFF) ? (1<<_PAGE_SIZE_POW) + 2 : *data;
+	uint16_t size = (*data == 0xFF) ? (1<<_BOOT_PAGE_SIZE_POW) + 2 : *data;
  80000f6:	2382      	movs	r3, #130	; 0x82
 
 static inline uint16_t ReceiveData(uint8_t *data)
 {	
-	UART->CR1 = USART_CR1_RE | USART_CR1_UE;
-	while(!(UART->ISR & USART_ISR_RXNE_Msk));
-	*data = UART->RDR;
+	BOOT_UART->CR1 = USART_CR1_RE | USART_CR1_UE;
+	while(!(BOOT_UART->ISR & USART_ISR_RXNE_Msk));
+	*data = BOOT_UART->RDR;
  80000f8:	b2d2      	uxtb	r2, r2
  80000fa:	7002      	strb	r2, [r0, #0]
 	
-	uint16_t size = (*data == 0xFF) ? (1<<_PAGE_SIZE_POW) + 2 : *data;
+	uint16_t size = (*data == 0xFF) ? (1<<_BOOT_PAGE_SIZE_POW) + 2 : *data;
  80000fc:	2aff      	cmp	r2, #255	; 0xff
  80000fe:	d000      	beq.n	8000102 <main+0xba>
  8000100:	b293      	uxth	r3, r2
@@ -352,10 +352,10 @@ static inline uint16_t ReceiveData(uint8_t *data)
 	
 	for(int i=1; i<size; i++)
  8000102:	2201      	movs	r2, #1
-	while(!(UART->ISR & USART_ISR_RXNE_Msk));
-	*data = UART->RDR;
+	while(!(BOOT_UART->ISR & USART_ISR_RXNE_Msk));
+	*data = BOOT_UART->RDR;
 	
-	uint16_t size = (*data == 0xFF) ? (1<<_PAGE_SIZE_POW) + 2 : *data;
+	uint16_t size = (*data == 0xFF) ? (1<<_BOOT_PAGE_SIZE_POW) + 2 : *data;
 	data++;
 	size += 3;	// sizeByte typeByte .. CheckSummByte
  8000104:	3303      	adds	r3, #3
@@ -364,16 +364,16 @@ static inline uint16_t ReceiveData(uint8_t *data)
  8000106:	429a      	cmp	r2, r3
  8000108:	da07      	bge.n	800011a <main+0xd2>
 	{
-		while(!(UART->ISR & USART_ISR_RXNE_Msk)); 
+		while(!(BOOT_UART->ISR & USART_ISR_RXNE_Msk)); 
  800010a:	69e9      	ldr	r1, [r5, #28]
  800010c:	0689      	lsls	r1, r1, #26
  800010e:	d5fc      	bpl.n	800010a <main+0xc2>
-		*(data++) = UART->RDR;
+		*(data++) = BOOT_UART->RDR;
  8000110:	4925      	ldr	r1, [pc, #148]	; (80001a8 <main+0x160>)
  8000112:	6a49      	ldr	r1, [r1, #36]	; 0x24
  8000114:	5481      	strb	r1, [r0, r2]
 	
-	uint16_t size = (*data == 0xFF) ? (1<<_PAGE_SIZE_POW) + 2 : *data;
+	uint16_t size = (*data == 0xFF) ? (1<<_BOOT_PAGE_SIZE_POW) + 2 : *data;
 	data++;
 	size += 3;	// sizeByte typeByte .. CheckSummByte
 	
@@ -469,7 +469,7 @@ static void FlashWriteWord(uint32_t addr, uint32_t data, uint32_t isErase) // 0 
 			continue;
 		}
 	
-		uint32_t addr = _FW_PAGE_START + (((buff[2]<<8) + buff[3]) << _PAGE_SIZE_POW);
+		uint32_t addr = _BOOT_FW_PAGE_START + (((buff[2]<<8) + buff[3]) << _BOOT_PAGE_SIZE_POW);
  8000156:	7883      	ldrb	r3, [r0, #2]
  8000158:	78c2      	ldrb	r2, [r0, #3]
  800015a:	021b      	lsls	r3, r3, #8
@@ -503,10 +503,10 @@ static void FlashWriteWord(uint32_t addr, uint32_t data, uint32_t isErase) // 0 
 {		
 	FLASH->PECR = isErase;
  800017a:	2700      	movs	r7, #0
-		uint32_t addr = _FW_PAGE_START + (((buff[2]<<8) + buff[3]) << _PAGE_SIZE_POW);
+		uint32_t addr = _BOOT_FW_PAGE_START + (((buff[2]<<8) + buff[3]) << _BOOT_PAGE_SIZE_POW);
 		FlashWriteWord(addr, 0, ERASE);
 		uint32_t word;
-		for(i=0; i < (1<<_PAGE_SIZE_POW); i+=4)
+		for(i=0; i < (1<<_BOOT_PAGE_SIZE_POW); i+=4)
 		{			
 			word = /*__REV*/(*(uint32_t*)&buff[4+i]);
  800017c:	5841      	ldr	r1, [r0, r1]
@@ -524,7 +524,7 @@ static void FlashWriteWord(uint32_t addr, uint32_t data, uint32_t isErase) // 0 
  8000184:	07c9      	lsls	r1, r1, #31
  8000186:	d4fc      	bmi.n	8000182 <main+0x13a>
 		uint32_t word;
-		for(i=0; i < (1<<_PAGE_SIZE_POW); i+=4)
+		for(i=0; i < (1<<_BOOT_PAGE_SIZE_POW); i+=4)
 		{			
 			word = /*__REV*/(*(uint32_t*)&buff[4+i]);
 			FlashWriteWord(addr, word, 0);
@@ -532,10 +532,10 @@ static void FlashWriteWord(uint32_t addr, uint32_t data, uint32_t isErase) // 0 
  8000188:	3204      	adds	r2, #4
 		}
 	
-		uint32_t addr = _FW_PAGE_START + (((buff[2]<<8) + buff[3]) << _PAGE_SIZE_POW);
+		uint32_t addr = _BOOT_FW_PAGE_START + (((buff[2]<<8) + buff[3]) << _BOOT_PAGE_SIZE_POW);
 		FlashWriteWord(addr, 0, ERASE);
 		uint32_t word;
-		for(i=0; i < (1<<_PAGE_SIZE_POW); i+=4)
+		for(i=0; i < (1<<_BOOT_PAGE_SIZE_POW); i+=4)
  800018a:	42b2      	cmp	r2, r6
  800018c:	d1f2      	bne.n	8000174 <main+0x12c>
 			word = /*__REV*/(*(uint32_t*)&buff[4+i]);

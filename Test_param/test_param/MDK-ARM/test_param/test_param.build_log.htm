@@ -27,18 +27,34 @@ Project File Date:  04/08/2023
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 5 (build 528)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'test_param'
-compiling param_hal_stm32L011D4P6.c...
-..\..\..\param_lib\src\param_hal_stm32L011D4P6.c(28): warning:  #940-D: missing return statement at end of non-void function "Param_HAL_GetFlashDataAddr" 
+compiling param.c...
+..\..\..\param_lib\src\param.c(143): warning:  #940-D: missing return statement at end of non-void function "Param_TransmitByte_callback" 
   }
-..\..\..\param_lib\src\param_hal_stm32L011D4P6.c(3): warning:  #550-D: variable "uart_rx_clbk"  was set but never used
-  static void (*uart_rx_clbk)(uint8_t, uint8_t);
-..\..\..\param_lib\src\param_hal_stm32L011D4P6.c(4): warning:  #550-D: variable "timer_clbk"  was set but never used
-  static void (*timer_clbk)(uint32_t);
-..\..\..\param_lib\src\param_hal_stm32L011D4P6.c: 3 warnings, 0 errors
+..\..\..\param_lib\src\param.c(160): warning:  #1-D: last line of file ends without a newline
+  }
+..\..\..\param_lib\src\param.c(25): warning:  #177-D: variable "buff"  was declared but never referenced
+  static uint8_t buff[BUFF_MAX_SIZE];
+..\..\..\param_lib\src\param.c(30): warning:  #177-D: variable "timer_us"  was declared but never referenced
+  static uint32_t timer_us = 0;
+..\..\..\param_lib\src\param.c(31): warning:  #177-D: variable "timer_s"  was declared but never referenced
+  static uint32_t timer_s = 0;
+..\..\..\param_lib\src\param.c(36): warning:  #177-D: function "GetBuff_"  was declared but never referenced
+  static void GetBuff_(uint32_t size)
+..\..\..\param_lib\src\param.c(47): warning:  #177-D: function "FreeBuff"  was declared but never referenced
+  static void FreeBuff(void *buff)
+..\..\..\param_lib\src\param.c(54): warning:  #177-D: function "Update_Stat_"  was declared but never referenced
+  static void Update_Stat_(void)
+..\..\..\param_lib\src\param.c(58): warning:  #177-D: function "SetError"  was declared but never referenced
+  static void SetError(uint8_t errN)
+..\..\..\param_lib\src\param.c(63): warning:  #177-D: function "SendBuff_"  was declared but never referenced
+  static void SendBuff_(void)
+..\..\..\param_lib\src\param.c(69): warning:  #177-D: function "ParseBuff_"  was declared but never referenced
+  static void ParseBuff_(void)	
+..\..\..\param_lib\src\param.c: 11 warnings, 0 errors
 linking...
 Program Size: Code=4112 RO-data=260 RW-data=16 ZI-data=1632  
 FromELF: creating hex file...
-"test_param\test_param.axf" - 0 Error(s), 3 Warning(s).
+"test_param\test_param.axf" - 0 Error(s), 11 Warning(s).
 
 <h2>Software Packages used:</h2>
 
