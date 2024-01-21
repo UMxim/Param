@@ -9,16 +9,16 @@ Discarded input sections
 Memory Configuration
 
 Name             Origin             Length             Attributes
-ROM              0x08000000         0x000001f6         xr
-CONSTS           0x080001f6         0x0000000a         xr
-SRAM             0x20000000         0x00000800         xrw
+ROM              0x08000000         0x00000400         xr
+SRAM             0x20000000         0x00000400         xrw
+SRAM_PRG         0x20000400         0x00000400         xrw
 *default*        0x00000000         0xffffffff
 
 Linker script and memory map
 
 LOAD ./build/init.o
 LOAD ./build/main.o
-                0x20000800                _estack = (0x800 + ORIGIN (SRAM))
+                0x20000400                _estack = (0x400 + ORIGIN (SRAM))
 
 .isr_vector     0x08000000       0x10
  *(.isr_vector)
@@ -37,6 +37,7 @@ LOAD ./build/main.o
  .text          0x08000018       0x28 ./build/main.o
  *(.rodata)
  .rodata        0x08000040        0x8 ./build/main.o
+OUTPUT(./build/boot_STM32_L011D4Px.elf elf32-littlearm)
 
 .glue_7         0x08000048        0x0
  .glue_7        0x00000000        0x0 linker stubs
@@ -57,17 +58,14 @@ LOAD ./build/main.o
  .text.startup  0x08000048      0x1a8 ./build/main.o
                 0x08000048                main
 
-.igot.plt       0x080001f0        0x0
+.consts         0x080001f0        0x9
+ .consts        0x080001f0        0x9 ./build/main.o
+                0x080001f0                vers
+
+.igot.plt       0x080001fc        0x0
  .igot.plt      0x00000000        0x0 ./build/init.o
 
-.consts         0x080001f6        0x9
-                0x080001f6                . = ALIGN (0x2)
- *(.consts)
- .consts        0x080001f6        0x9 ./build/main.o
-                0x080001f6                vers
-OUTPUT(./build/boot_STM32_L011D4Px.elf elf32-littlearm)
-
-.rel.dyn        0x08000200        0x0
+.rel.dyn        0x080001fc        0x0
  .rel.iplt      0x00000000        0x0 ./build/init.o
 
 .debug_info     0x00000000      0x8c5

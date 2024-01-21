@@ -7,5 +7,5 @@
 08000040 t errCS.4556
 08000044 t errType.4557
 08000048 T main
-080001f6 R vers
-20000800 A _estack
+080001f0 R vers
+20000400 A _estack

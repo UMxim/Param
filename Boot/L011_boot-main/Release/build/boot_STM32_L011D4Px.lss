@@ -9,27 +9,27 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
   2 .text.startup 000001a8  08000048  08000048  00008048  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  3 .consts       00000009  080001f6  080001f6  000081f6  2**0
+  3 .consts       00000009  080001f0  080001f0  000081f0  2**0
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  4 .debug_info   000008c5  00000000  00000000  000081ff  2**0
+  4 .debug_info   000008c5  00000000  00000000  000081f9  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_abbrev 000002fb  00000000  00000000  00008ac4  2**0
+  5 .debug_abbrev 000002fb  00000000  00000000  00008abe  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_aranges 00000048  00000000  00000000  00008dbf  2**0
+  6 .debug_aranges 00000048  00000000  00000000  00008db9  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   00000212  00000000  00000000  00008e07  2**0
+  7 .debug_line   00000212  00000000  00000000  00008e01  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_str    000003da  00000000  00000000  00009019  2**0
+  8 .debug_str    000003da  00000000  00000000  00009013  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .comment      00000070  00000000  00000000  000093f3  2**0
+  9 .comment      00000070  00000000  00000000  000093ed  2**0
                   CONTENTS, READONLY
- 10 .ARM.attributes 00000031  00000000  00000000  00009463  2**0
+ 10 .ARM.attributes 00000031  00000000  00000000  0000945d  2**0
                   CONTENTS, READONLY
- 11 .debug_frame  00000074  00000000  00000000  00009494  2**2
+ 11 .debug_frame  00000074  00000000  00000000  00009490  2**2
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    0000033a  00000000  00000000  00009508  2**0
+ 12 .debug_loc    0000033a  00000000  00000000  00009504  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00000060  00000000  00000000  00009842  2**0
+ 13 .debug_ranges 00000060  00000000  00000000  0000983e  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -564,7 +564,7 @@ static void FlashWriteWord(uint32_t addr, uint32_t data, uint32_t isErase) // 0 
  80001ac:	0000d055 	.word	0x0000d055
  80001b0:	cfffffff 	.word	0xcfffffff
  80001b4:	f0ffffff 	.word	0xf0ffffff
- 80001b8:	080001f6 	.word	0x080001f6
+ 80001b8:	080001f0 	.word	0x080001f0
  80001bc:	08000200 	.word	0x08000200
  80001c0:	e000ed00 	.word	0xe000ed00
  80001c4:	08000204 	.word	0x08000204

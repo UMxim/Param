@@ -1,0 +1,5 @@
+../param/param_hal_stm32L011D4P6.c:6:6:Param_HAL_Init	1
+../param/param_hal_stm32L011D4P6.c:11:6:Param_HAL_Transmit	1
+../param/param_hal_stm32L011D4P6.c:15:6:Param_HAL_RegisterCallback_Uart_Rx	1
+../param/param_hal_stm32L011D4P6.c:20:6:Param_HAL_RegisterCallback_Timer	1
+../param/param_hal_stm32L011D4P6.c:26:11:Param_HAL_GetFlashDataAddr	1
