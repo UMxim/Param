@@ -20,8 +20,8 @@
 
 */
 
-#define PARAM_IS_STATIC_BUFF 			1 // 1- сразу выделяем массив на 260Б, 0- будем использовать malloc 
-#define PARAM_IS_SELFCFG_SYSTICK	1	// 1 - сконфигурируем и будем использовать Systick 0-Вызов пользователем Param_Timer_callback
+#define PARAM_IS_STATIC_BUFF 			1 	// 1- сразу выделяем массив на 260Б, 0- будем использовать malloc
+#define PARAM_IS_SELFCFG_SYSTICK		1	// 1 - сконфигурируем и будем использовать Systick 0-Вызов пользователем Param_Timer_callback
  
 // Заполнить переменные параметров по образцу:
 #define PARAM_PARAM_ARR	{24*60*60, "Stat_upd_time, sec"},   // STAT_UPDATE_FREQ_S по умолчанию - сутки 
@@ -36,13 +36,5 @@
 // Выбор используемого МК
 #include "param_hal_stm32L011D4P6.h"
 
-
-// описать следующие функции, зависящие от HW 
-
-int Param_WriteParam(uint32_t offset, const void *data, uint16_t size);
-
-void Param_Reset(void);
-
-uint32_t Param_GetDump(uint8_t* dump);
 
 #endif // PARAM_CFG_H_
