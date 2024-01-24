@@ -4,9 +4,9 @@
 Модуль для хранения настроек и статистики, а также изменение параметров по команде с UART
 Для работы необходимо:
 
-2. Задать PARAM_FLASH_OFFSET - начало сохраненных параметров во флеш или EEPROM 
+2. Задать PARAM_FLASH_OFFSET - начало сохраненных параметров во флеш или EEPROM
 3. Задать PARAM_TIMER_PERIOD_MKS. Необходимо по таймеру вызывать Param_Timer_callback. Этим дефайном задается перииод вызова.
-4. Заполнить массивы params и statistic по образцу в param_cfg.c 
+4. Заполнить массивы params и statistic по образцу
 4а.Чтобы не использовать обезличенные переменные вроде param[0].value можно задать им клички типа #define STAT_UPDATE_FREQ_S
 5. Написать интерфейсные функции Param_SendByte Param_GetCRC16 Param_WriteParam Param_Reset для работы с текущим железом
 6. Описать ф-ию Param_GetDump(), которая вызывается при команде получения дампа
@@ -22,11 +22,11 @@
 
 #define PARAM_IS_STATIC_BUFF 			1 	// 1- сразу выделяем массив на 260Б, 0- будем использовать malloc
 #define PARAM_IS_SELFCFG_SYSTICK		1	// 1 - сконфигурируем и будем использовать Systick 0-Вызов пользователем Param_Timer_callback
- 
-// Заполнить переменные параметров по образцу:
-#define PARAM_PARAM_ARR	{24*60*60, "Stat_upd_time, sec"},   // STAT_UPDATE_FREQ_S по умолчанию - сутки 
 
-// Заполнить переменные статистики 
+// Заполнить переменные параметров по образцу:
+#define PARAM_PARAM_ARR	{24*60*60, "Stat_upd_time, sec"},   // STAT_UPDATE_FREQ_S по умолчанию - сутки
+
+// Заполнить переменные статистики
 #define PARAM_STAT_ARR	{0, "on counter"}, // количество включений
 					//	{val, "other stat"}, \
 // заполнить псевдонимы для переменных параметров. по образцу:

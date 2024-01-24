@@ -2,6 +2,7 @@
 #define PARAM_H_
 
 #include <stdint.h>
+#include "param_cfg.h"
 
 typedef struct {
 	uint32_t value;

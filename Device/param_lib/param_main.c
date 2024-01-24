@@ -11,19 +11,23 @@
 void Param_RecieveByte_Callback(uint8_t byte, uint8_t isReset);
 void Param_Timer_Callback(uint32_t period);
 
-static const params_t paramsDef[] =	{
-	PARAM_PARAM_ARR	}; // параметры
-	
-static const params_t statisticDef[] = {
-	PARAM_STAT_ARR }; // статистика
+static const params_t paramsDef[] =
+    {
+	PARAM_PARAM_ARR
+    }; // параметры
+
+static const params_t statisticDef[] =
+    {
+	PARAM_STAT_ARR
+    }; // статистика
 
 uint32_t params[PARAM_LIST_NUM]; // параметры
-	
+
 uint32_t statistic[STAT_LIST_NUM]; // статистика
-	
+
 #if (PARAM_IS_STATIC_BUFF)
 static uint8_t buff[BUFF_MAX_SIZE];
-#else 
+#else
 static uint8_t *buff;
 #endif
 
@@ -53,11 +57,11 @@ static void FreeBuff(void *buff)
 
 static void Update_Stat_(void)
 {
-	
+
 }
 static void SetError(uint8_t errN)
 {
-	 
+
 }
 
 static void SendBuff_(void)
@@ -66,53 +70,53 @@ static void SendBuff_(void)
 }
 
 
-static void ParseBuff_(void)	
+static void ParseBuff_(void)
 {
 	// check crc
 }
 
 
 void Param_Init(void *dump, int dump_size)
-{	
+{
 	Param_HAL_Init();
 	Param_HAL_RegisterCallback_Uart_Rx(Param_RecieveByte_Callback);
 	Param_HAL_RegisterCallback_Timer(Param_Timer_Callback);
-	// read params	
+	// read params
 	uint16_t dataSize_Word = PARAM_LIST_NUM + STAT_LIST_NUM + 1;
 	uint32_t *data = Param_HAL_GetFlashDataAddr();
-	
+
 	uint32_t cs = CHECKSUMM_INIT;
 	for (int i=0; i<=dataSize_Word; i++)
 	{
 		cs ^= data[i];
 	}
-	
+
 	for (int i=0; i<PARAM_LIST_NUM; i++)
 	{
-		params[i] = (cs) ? paramsC[i].value : data[i];		
-	}		
-	
+		params[i] = (cs) ? paramsC[i].value : data[i];
+	}
+
 	for (int i=0; i<STAT_LIST_NUM; i++)
 	{
 		statistic[i] = (cs) ? statisticC[i].value : data[i+PARAM_LIST_NUM];
 	}
-	isInit = 1;	
+	isInit = 1;
 }
 
 // Вызываем в прерывании при получении байта
 void Param_RecieveByte_Callback(uint8_t byte, uint8_t isReset)
-{	
-	/*static uint8_t firstByte;		
-	if ( !isInit ) ; else return;	
-	
+{
+	/*static uint8_t firstByte;
+	if ( !isInit ) ; else return;
+
 	switch (counter)	{
-		case 0:			
+		case 0:
 			firstByte = byte;
 			counter++;
 			state = STATE_RX;
 			safeTimer = timer_us;
 			break;
-		case 1:			
+		case 1:
 			GetBuff_(1 + 1 + byte + 2);
 			if (!buff) {
 				state = STATE_NO_INIT; // вот и всё
@@ -121,13 +125,13 @@ void Param_RecieveByte_Callback(uint8_t byte, uint8_t isReset)
 			buff[0] = firstByte;
 			buff[1] = byte;
 			counter++;
-			break;		
+			break;
 		default:
 			buff[counter]= byte;
-			counter++;			
-			if (counter == (2 + buff[0] + 1)) {	// все получено, обрабатываем				
-				ParseBuff_();	
-				SendBuff_();	
+			counter++;
+			if (counter == (2 + buff[0] + 1)) {	// все получено, обрабатываем
+				ParseBuff_();
+				SendBuff_();
 				counter = 0;
 				state = STATE_IDLE;
 			}
@@ -139,10 +143,10 @@ void Param_RecieveByte_Callback(uint8_t byte, uint8_t isReset)
 uint8_t Param_TransmitByte_callback(void)
 {
 	if (!isInit) return 0;
-	
+
 }
 
-// Вызывать в прерывании таймера. Квант времени описать в дефайне 
+// Вызывать в прерывании таймера. Квант времени описать в дефайне
 void Param_Timer_Callback(uint32_t period)
 {	/*
 	static uint32_t nextStatUpdate = STAT_UPDATE_FREQ_S;

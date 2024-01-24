@@ -6,18 +6,12 @@
 				<externalSettings/>
 				<extensions>
 					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
-					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.MakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.VCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.autotools.core.ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="elf" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.986673211" name="Debug" optionalBuildProperties="" parent="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.986673211">
+				<configuration artifactExtension="elf" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.986673211" name="Debug" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=" parent="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.986673211">
 					<folderInfo id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.986673211." name="/" resourcePath="">
 						<toolChain id="com.st.stm32cube.ide.mcu.gnu.managedbuild.toolchain.exe.debug.850178840" name="MCU ARM GCC">
 							<option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.target_mcu.692528147" name="MCU" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.target_mcu" useByScannerDiscovery="true" value="STM32L011D4Px" valueType="string"/>
@@ -26,7 +20,7 @@
 							<option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.target_board.1866096932" name="Board" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.target_board" useByScannerDiscovery="false" value="genericBoard" valueType="string"/>
 							<option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.defaults.932362146" name="Defaults" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.defaults" useByScannerDiscovery="false" value="com.st.stm32cube.ide.common.services.build.inputs.revA.1.0.5 || Debug || true || Executable || com.st.stm32cube.ide.mcu.gnu.managedbuild.option.toolchain.value.workspace || STM32L011D4Px || 0 || 0 || arm-none-eabi- || ${gnu_tools_for_stm32_compiler_path} || ../Core/Inc | ../Drivers/STM32L0xx_HAL_Driver/Inc | ../Drivers/CMSIS/Device/ST/STM32L0xx/Include | ../Drivers/CMSIS/Include ||  ||  || USE_FULL_LL_DRIVER | HSE_VALUE=8000000 | HSE_STARTUP_TIMEOUT=100 | LSE_STARTUP_TIMEOUT=5000 | LSE_VALUE=32768 | MSI_VALUE=2097000 | HSI_VALUE=16000000 | LSI_VALUE=37000 | VDD_VALUE=3300 | PREFETCH_ENABLE=0 | INSTRUCTION_CACHE_ENABLE=1 | DATA_CACHE_ENABLE=1 | STM32L011xx ||  || Drivers | Core/Startup | Core ||  ||  || ${workspace_loc:/${ProjName}/STM32L011D4PX_FLASH.ld} || true || NonSecure ||  || secure_nsclib.o ||  || None || " valueType="string"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.targetplatform.600986228" isAbstract="false" osList="all"/>
-							<builder buildPath="${workspace_loc:/test_param}/Debug" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.builder.159382761" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" parallelBuildOn="true"/>
+							<builder buildPath="${workspace_loc:/test_param}/Debug" id="cdt.managedbuild.builder.gnu.cross.1815460468" superClass="cdt.managedbuild.builder.gnu.cross"/>
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
