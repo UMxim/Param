@@ -1,8 +1,8 @@
-#include "param.h"
+#include "param_main.h"
 #include "param_cfg.h"
 
-#define PARAM_LIST_NUM ( sizeof(paramsC) / sizeof(params_t) )
-#define STAT_LIST_NUM ( sizeof(statisticC) / sizeof(params_t) )
+#define PARAM_LIST_NUM ( sizeof(paramsDef) / sizeof(params_t) )
+#define STAT_LIST_NUM ( sizeof(statisticDef) / sizeof(params_t) )
 #define BUFF_MAX_SIZE (1 + 1 + 255 + 1 ) // T L V X
 #define CHECKSUMM_INIT  0x96C30FA5UL
 #define US_IN_S		1000000UL
@@ -93,12 +93,12 @@ void Param_Init(void *dump, int dump_size)
 
 	for (int i=0; i<PARAM_LIST_NUM; i++)
 	{
-		params[i] = (cs) ? paramsC[i].value : data[i];
+		params[i] = (cs) ? paramsDef[i].value : data[i];
 	}
 
 	for (int i=0; i<STAT_LIST_NUM; i++)
 	{
-		statistic[i] = (cs) ? statisticC[i].value : data[i+PARAM_LIST_NUM];
+		statistic[i] = (cs) ? statisticDef[i].value : data[i+PARAM_LIST_NUM];
 	}
 	isInit = 1;
 }

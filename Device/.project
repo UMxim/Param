@@ -29,11 +29,4 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>param_lib</name>
-			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/param_lib</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>
