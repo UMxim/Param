@@ -20,8 +20,7 @@
 
 */
 
-#define PARAM_IS_STATIC_BUFF 			1 	// 1- сразу выделяем массив на 260Б, 0- будем использовать malloc
-#define PARAM_IS_SELFCFG_SYSTICK		1	// 1 - сконфигурируем и будем использовать Systick 0-Вызов пользователем Param_Timer_callback
+#define PARAM_EXT_TIMER_PERIOD_NS		0	// 0 - сконфигурируем и будем использовать Systick X-Вызов пользователем Param_Timer_callback c периодичностью XX
 
 // Заполнить переменные параметров по образцу:
 #define PARAM_PARAM_ARR	{24*60*60, "Stat_upd_time, sec"},   // STAT_UPDATE_FREQ_S по умолчанию - сутки
@@ -29,6 +28,7 @@
 // Заполнить переменные статистики
 #define PARAM_STAT_ARR	{0, "on counter"}, // количество включений
 					//	{val, "other stat"}, \
+
 // заполнить псевдонимы для переменных параметров. по образцу:
 #define STAT_UPDATE_FREQ_S 		param[0]	// это нужный параметр - частота проверки изменения статистики и запись на флеш при необходимости
 #define STAT_ON_CNT 					statistic[0]
@@ -36,5 +36,10 @@
 // Выбор используемого МК
 #include "param_hal_stm32L011D4P6.h"
 
+// Заполнить тип устройства и версии!!!
+#define HW_TYPE	0x01
+#define HW_VER  0x01
+#define SW_VER  0x01
+#define DEVICE_STR "TEST_DEVICE"
 
 #endif // PARAM_CFG_H_
