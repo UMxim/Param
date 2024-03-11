@@ -61,8 +61,8 @@ all: main-build
 main-build: test_param.elf secondary-outputs
 
 # Tool invocations
-test_param.elf test_param.map: $(OBJS) $(USER_OBJS) C:\Projects\Param\Device\STM32L011D4PX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "test_param.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"C:\Projects\Param\Device\STM32L011D4PX_FLASH.ld" --specs=nosys.specs -Wl,-Map="test_param.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+test_param.elf test_param.map: $(OBJS) $(USER_OBJS) D:\Project\My\stm32\34_Param\Device\STM32L011D4PX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "test_param.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"D:\Project\My\stm32\34_Param\Device\STM32L011D4PX_FLASH.ld" --specs=nosys.specs -Wl,-Map="test_param.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

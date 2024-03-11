@@ -23,5 +23,9 @@ void Param_Init(void *dump, int dump_size);
 void Param_Flush(void);
 
 
-void Param_Timer_Callback(uint32_t period_ns);
+void Param_Timer_Callback(void);
+
+// Вызываем в прерывании при получении байта
+void Param_RecieveByte_Callback(uint8_t byte);
+
 #endif // PARAM_H_

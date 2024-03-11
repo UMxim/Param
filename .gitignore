@@ -70,3 +70,5 @@ Device/Debug/sources.mk
 Device/Debug/Core/Src/subdir.mk
 Device/Debug/Core/Src/subdir.mk
 Device/Debug/Core/Src/subdir.mk
+Doc/~$отокол.docx
+Device/test_param Debug.launch

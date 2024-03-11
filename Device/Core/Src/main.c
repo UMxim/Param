@@ -53,7 +53,7 @@ static void MX_GPIO_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-extern void Param_RecieveByte_Callback(uint8_t byte, uint8_t isReset);
+//extern void Param_RecieveByte_Callback(uint8_t byte);
 /* USER CODE END 0 */
 
 /**
@@ -90,7 +90,8 @@ int main(void)
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
   Param_Init(NULL, 0);
-  Param_RecieveByte_Callback(1, 0);
+  // Вызываем в прерывании при получении байта
+  Param_RecieveByte_Callback(1);
   /* USER CODE END 2 */
 
   /* Infinite loop */

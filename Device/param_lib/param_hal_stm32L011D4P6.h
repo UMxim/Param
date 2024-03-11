@@ -5,9 +5,9 @@
 
 #define PARAM_FLASH_OFFSET 				0x12345678 // адрес нулевого смещения
 #define PARAM_UART						UART1
-#define PARAM_INTERNAL_TIMER_PERIOD_NS	1000000000
+#define PARAM_INTERNAL_TIMER_PERIOD_NS	1000000 // 1ms
 
-void Param_HAL_Init(void (*uart_callback)(uint8_t, uint8_t), void (*timer_callback)(uint32_t));
+void Param_HAL_Init(void (*uart_callback)(uint8_t), void (*timer_callback)(void));
 void Param_HAL_Transmit(uint8_t *data, uint32_t size);
 
 uint32_t *Param_HAL_GetFlashDataAddr(void);

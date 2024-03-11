@@ -23,11 +23,11 @@
 #define PARAM_EXT_TIMER_PERIOD_NS		0	// 0 - сконфигурируем и будем использовать Systick X-Вызов пользователем Param_Timer_callback c периодичностью XX
 
 // Заполнить переменные параметров по образцу:
-#define PARAM_PARAM_ARR	{24*60*60, "Stat_upd_time, sec"},   // STAT_UPDATE_FREQ_S по умолчанию - сутки
+#define PARAM_PARAM_ARR	{24*60*60, "Stat_upd, sec"}   // STAT_UPDATE_FREQ_S по умолчанию - сутки
 
 // Заполнить переменные статистики
-#define PARAM_STAT_ARR	{0, "on counter"}, // количество включений
-					//	{val, "other stat"}, \
+#define PARAM_STAT_ARR	{0, "on counter"} // количество включений
+					//	,{val, "other stat"},
 
 // заполнить псевдонимы для переменных параметров. по образцу:
 #define STAT_UPDATE_FREQ_S 		param[0]	// это нужный параметр - частота проверки изменения статистики и запись на флеш при необходимости
@@ -42,4 +42,5 @@
 #define SW_VER  0x01
 #define DEVICE_STR "TEST_DEVICE"
 
+#define PARAM_MAX_STR 16 // Максимальный размер строки для экрана. Без /0
 #endif // PARAM_CFG_H_
