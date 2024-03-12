@@ -12,5 +12,6 @@ void Param_HAL_Transmit(uint8_t *data, uint32_t size);
 
 uint32_t *Param_HAL_GetFlashDataAddr(void);
 uint32_t Param_HAL_WriteFlashData(void *data, uint32_t size);
+void Param_HAL_Reset();
 
 #endif //PARAM_HAL_STM32L011D4P6_H

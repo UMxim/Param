@@ -72,3 +72,7 @@ Device/Debug/Core/Src/subdir.mk
 Device/Debug/Core/Src/subdir.mk
 Doc/~$отокол.docx
 Device/test_param Debug.launch
+/Device/.settings
+/Device/.settings
+Device/.settings/language.settings.xml
+/Device/Debug

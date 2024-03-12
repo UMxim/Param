@@ -89,7 +89,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-  Param_Init(NULL, 0);
+  Param_Init(NULL, 0, 0);
   // Вызываем в прерывании при получении байта
   Param_RecieveByte_Callback(1);
   /* USER CODE END 2 */

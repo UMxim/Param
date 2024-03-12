@@ -4,10 +4,9 @@
 
 #define PARAM_LIST_NUM 		( sizeof(paramsDef) / sizeof(params_t) )
 #define STAT_LIST_NUM 		( sizeof(statisticDef) / sizeof(params_t) )
-#define BUFF_MAX_SIZE 		(4 + 8 + PARAM_MAX_STR) // Len Type CS NU Data. Data расчитана для макимального ответа
+#define BUFF_MAX_SIZE 		(sizeof(packet_header_t) + 8 + PARAM_MAX_STR) // Len Type CS NU Data. Data расчитана для макимального ответа
 #define CHECKSUMM_INIT  	0x96C30FA5UL
 #define FIND_CONSTANT		0xDEADBEEF
-#define HEADER_LEN			4 // размер заголовка пакета
 
 typedef struct
 {
@@ -15,7 +14,6 @@ typedef struct
 	uint8_t type;
 	uint8_t checksumm;
 	uint8_t reserved;
-	uint8_t dataFB; // data First Byte - для взятия адреса начала данных
 } packet_header_t;
 
 static const struct
@@ -24,16 +22,19 @@ static const struct
 	uint8_t type;
 	uint8_t hw_ver;
 	uint8_t sw_ver;
-	uint8_t na;
+	uint8_t max_data_size;
 	uint8_t name[];
 } info = {
 			FIND_CONSTANT,
 			HW_TYPE,
 			HW_VER,
 			SW_VER,
-			0,
+			BUFF_MAX_SIZE - sizeof(packet_header_t),
 			DEVICE_STR
 		  };
+
+static uint8_t * _dump;
+static uint16_t _dump_len;
 
 void Param_RecieveByte_Callback(uint8_t byte);
 
@@ -47,14 +48,18 @@ static const params_t statisticDef[] =
 	PARAM_STAT_ARR
     }; // статистика по умолчанию на флеше
 
-uint32_t params[PARAM_LIST_NUM]; // параметры текущие
+uint32_t param_statistic_cs_arr[PARAM_LIST_NUM + STAT_LIST_NUM + 1]; // чтобы вместе лежали, как на флеше
 
-uint32_t statistic[STAT_LIST_NUM]; // статистика текущая
+uint32_t *const params = param_statistic_cs_arr; // параметры текущие
+uint32_t *const statistic = param_statistic_cs_arr + PARAM_LIST_NUM; // статистика текущая
+uint32_t * const cs = param_statistic_cs_arr + PARAM_LIST_NUM + STAT_LIST_NUM;
+
 
 static uint8_t buff[BUFF_MAX_SIZE] __attribute__ ((aligned (4)));
 
 static packet_header_t * const header = (packet_header_t *)buff;
-static uint8_t * const data = &header->dataFB;
+static uint8_t * const data = buff + sizeof(packet_header_t);
+static uint8_t isReset =0;
 
 static volatile uint64_t timer_ns = 0;
 
@@ -83,11 +88,24 @@ typedef enum
 
 static uint8_t _CalcCS()
 {
-	uint16_t len = HEADER_LEN + header->dataLen;
+	uint16_t len = sizeof(packet_header_t) + header->dataLen;
 	uint8_t cs = 0;
 	for (int i=0; i<len; i++)
 		cs^=buff[i];
 	return cs;
+}
+
+// Сбрасываем на флеш при необходимости
+void _Flush()
+{
+	uint32_t *flashData = Param_HAL_GetFlashDataAddr();
+	if ( !memcmp(flashData, param_statistic_cs_arr, sizeof(param_statistic_cs_arr) ) ) return; // не изменилось
+	*cs = CHECKSUMM_INIT;
+	for (int i=0; i<=PARAM_LIST_NUM + STAT_LIST_NUM; i++)
+	{
+		*cs ^= param_statistic_cs_arr[i];
+	}
+	Param_HAL_WriteFlashData(param_statistic_cs_arr, sizeof(param_statistic_cs_arr));
 }
 
 static inline void _Get_info()
@@ -97,10 +115,10 @@ static inline void _Get_info()
 	memcpy(data, &info, header->dataLen); // первые значения. Для дисплея берем только 16 букв
 }
 
-static inline error_t Get_statistic()
+static inline error_t _Get_statistic()
 {
 	uint8_t n = data[0];
-	if (n >= STAT_LIST_NUM - 1)
+	if (n >= STAT_LIST_NUM)
 		return ERROR_DATA;
 
 	header->type = TYPE_GET_STATISTIC;
@@ -110,42 +128,78 @@ static inline error_t Get_statistic()
 	return ERROR_OK;
 }
 
-static inline void Reset_statistic()
+static inline void _Reset_statistic()
 {
-
+	for (int i=0; i<STAT_LIST_NUM; i++)
+	{
+		statistic[i] = statisticDef[i].value;
+	}
 }
 
-static inline void Get_param()
+static inline error_t _Get_param()
 {
+	uint8_t n = data[0];
+	if (n >= PARAM_LIST_NUM)
+		return ERROR_DATA;
 
+	header->type = TYPE_GET_PARAM;
+	memcpy(data, &params[n], 4);
+	memcpy(data + sizeof(params[0]), &paramsDef[n], 4);
+	memcpy(data + 2 * sizeof(params[0]), paramsDef[n].text, PARAM_MAX_STR);
+	header->dataLen = 2 * sizeof(params[0]) + PARAM_MAX_STR; // 8 + 16
+	return ERROR_OK;
 }
 
-static inline void Write_param()
+static inline error_t _Write_param()
 {
+	uint8_t n = data[0];
+	if (n >= PARAM_LIST_NUM)
+		return ERROR_DATA;
 
+	uint32_t newParam;
+	memcpy(&newParam, data + 1, 4);
+	params[n] = newParam;
+
+	header->type = TYPE_WRITE_PARAM;
+	header->dataLen = 0;
+
+	return ERROR_OK;
 }
 
-static inline void Get_dump()
+static inline void _Get_dump()
 {
-
+	uint16_t offset = data[0] + (data[1]<<8);
+	header->type = TYPE_GET_DUMP;
+	if (offset >= _dump_len || !_dump)
+	{
+		header->dataLen = 0;
+		return;
+	}
+	header->dataLen = ((_dump_len - offset) > info.max_data_size) ? info.max_data_size : (_dump_len - offset);
+	memcpy(data, _dump + offset, header->dataLen);
 }
 
-static inline void Reset()
+static inline void _Reset()
 {
+	_Flush();
 
+	//Param_HAL_Reset();
 }
 
-static inline void Write_FW()
+static inline void _Write_FW()
 {
-
+	_Flush();
+	Param_HAL_SetBootCfg();
+	Param_HAL_Reset();
 }
 
 static void SendError(error_t errN)
 {
-	buff[0] = 1; // len type err cs
-	buff[1] = TYPE_ERROR;
-	buff[2] = errN;
-	_CalcCS();
+	header->dataLen = 1; // len type err cs
+	header->type = TYPE_ERROR;
+	*data = errN;
+	header->checksumm = 0;
+	header->checksumm = _CalcCS();
 	Param_HAL_Transmit(buff, 4);
 }
 
@@ -165,19 +219,25 @@ static void _ParseBuff(void)
 		break;
 
 	case TYPE_GET_STATISTIC | 0x80:
-		ans = Get_statistic(1);
+		ans = _Get_statistic();
 		break;
 	case TYPE_RESET_STATISTIC | 0x80:
+		_Reset_statistic();
 		break;
 	case TYPE_GET_PARAM | 0x80:
+		ans = _Get_param();
 		break;
 	case TYPE_WRITE_PARAM | 0x80:
+		ans = _Write_param();
 		break;
 	case TYPE_GET_DUMP | 0x80:
+		_Get_dump();
 		break;
 	case TYPE_RESET | 0x80:
+		_Reset();
 		break;
 	case TYPE_WRITE_FW | 0x80:
+		_Write_FW();
 		break;
 
 	default:
@@ -193,13 +253,14 @@ static void _ParseBuff(void)
 }
 
 
-void Param_Init(void *dump, int dump_size)
+void Param_Init(void * dump, uint16_t dump_len, int dump_size)
 {
 	Param_HAL_Init(Param_RecieveByte_Callback, Param_Timer_Callback);
 	// read params
 	uint16_t dataSize_Word = PARAM_LIST_NUM + STAT_LIST_NUM + 1;
 	uint32_t *dataFlash = buff;//Param_HAL_GetFlashDataAddr();
-
+	_dump = dump;
+	_dump_len = dump_len;
 	uint32_t cs = CHECKSUMM_INIT;
 	for (int i=0; i<=dataSize_Word; i++)
 	{
@@ -234,7 +295,7 @@ void Param_RecieveByte_Callback(uint8_t byte)
 	/////
 
 
-	if (pos == HEADER_LEN + header->dataLen)
+	if (pos == sizeof(packet_header_t) + header->dataLen)
 	{
 		pos = 0;
 		_ParseBuff();
