@@ -20,7 +20,7 @@
 
 */
 
-#define PARAM_EXT_TIMER_PERIOD_NS		0	// 0 - сконфигурируем и будем использовать Systick X-Вызов пользователем Param_Timer_callback c периодичностью XX
+#define PARAM_EXT_TIMER_PERIOD_NS		1000000	// Вызов пользователем Param_Timer_callback c периодичностью XX
 
 // Заполнить переменные параметров по образцу:
 #define PARAM_PARAM_ARR	{24*60*60, "Stat_upd, sec"}   // STAT_UPDATE_FREQ_S по умолчанию - сутки
@@ -31,7 +31,7 @@
 
 // заполнить псевдонимы для переменных параметров. по образцу:
 #define STAT_UPDATE_FREQ_S 		param[0]	// это нужный параметр - частота проверки изменения статистики и запись на флеш при необходимости
-#define STAT_ON_CNT 					statistic[0]
+#define STAT_ON_CNT 			statistic[0]
 
 // Выбор используемого МК
 #include "param_hal_stm32L011D4P6.h"

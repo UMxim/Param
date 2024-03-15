@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include "param_cfg.h"
 
 typedef struct {
 	uint32_t value;
@@ -22,10 +21,9 @@ void Param_Init(void *dump, uint16_t dump_len, int dump_size);
 // Принудительно сбросить значения на флеш
 void Param_Flush(void);
 
+// Вызываем из HAL сигнал от аппаратуры.1-rx byte 2-tx, state
+void Param_HAL_Callback(uint8_t device, uint8_t param);
 
 void Param_Timer_Callback(void);
-
-// Вызываем в прерывании при получении байта
-void Param_RecieveByte_Callback(uint8_t byte);
 
 #endif // PARAM_H_

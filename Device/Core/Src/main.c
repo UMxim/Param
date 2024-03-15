@@ -91,7 +91,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   Param_Init(NULL, 0, 0);
   // Вызываем в прерывании при получении байта
-  Param_RecieveByte_Callback(1);
+  //Param_RecieveByte_Callback(1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
