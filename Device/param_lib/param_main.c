@@ -110,7 +110,7 @@ static uint8_t _CalcCS()
 static uint16_t _CopyStr(const char *str, uint8_t data_pos) // указатель на исходную строку, позиция в буфере данных для записи
 {
 	uint16_t len = 0;
-	while (str)
+	while (*str)
 	{
 		data[data_pos++] = *(str++);
 		len++;
@@ -313,7 +313,8 @@ void Param_Init(void * dump_in, uint16_t dump_len, int dump_size)
 
 void _Param_Cycle()
 {
-
+// сбор статистики
+	// после изменения параметров - flush ? или ресет обязателен у ридера
 }
 
 // Вызываем в прерывании при получении байта

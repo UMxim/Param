@@ -53,7 +53,24 @@ static void MX_GPIO_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-//extern void Param_RecieveByte_Callback(uint8_t byte);
+extern void Param_RxCallback(uint8_t byte);
+
+uint8_t buff1[100];
+uint8_t Fill(uint8_t *data, uint8_t len, uint8_t type)
+{
+	buff1[0] = len;
+	buff1[1] = type;
+	buff1[2] = 0;
+	buff1[3] = 0;
+	for (int i=0; i<len; i++)
+		buff1[4+i] = data[i];
+	uint8_t cs = 0;
+	for (int i=0; i<len+4; i++)
+		cs ^= buff1[i];
+	buff1[2] = cs;
+	return 4+ len;
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -92,12 +109,52 @@ int main(void)
   Param_Init(NULL, 0, 0);
   // Вызываем в прерывании при получении байта
   //Param_RecieveByte_Callback(1);
+  volatile uint8_t a = 0xFF;
+  volatile uint32_t param_wr = 0;
+  volatile uint8_t param_n = 0;
+  volatile uint16_t dump = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  uint8_t len = 0;
+
+	  switch (a)
+	  {
+	  case 0xFF:
+		  break;
+	  case 0: // info
+		  len = Fill(NULL, 0, 0x80+a);
+		  break;
+	  case 1: // get stat
+		  len = Fill(&param_n, 1,  0x80+a);
+		  break;
+	  case 2: // reset stat
+		  len = Fill(NULL, 0,  0x80+a);
+		  break;
+	  case 3: // get param
+		  len = Fill(&param_n, 1,  0x80+a);
+		  break;
+	  case 4: // write param
+	 	  len = Fill(&param_wr, 5,  0x80+a);
+		  break;
+	  case 6: // dump
+		  len = Fill(&dump, 2,  0x80+a);
+		  break;
+	  case 7: // reset
+		  len = Fill(NULL, 0,  0x80+a);
+		  break;
+	  case 8: // fw
+		  len = Fill(NULL, 0,  0x80+a);
+		  break;
+	  }
+
+	  for (int i=0; i<len; i++)
+		//  Param_RxCallback(buff1[i]);
+
+	  a = 0xFF;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
