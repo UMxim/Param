@@ -21,9 +21,7 @@ void Param_Init(void *dump, uint16_t dump_len, int dump_size);
 // Принудительно сбросить значения на флеш
 void Param_Flush(void);
 
-// Вызываем из HAL сигнал от аппаратуры.1-rx byte 2-tx, state
-void Param_HAL_Callback(uint8_t device, uint8_t param);
-
+void Param_RxCallback(uint8_t byte);
 void Param_Timer_Callback(void);
 
 #endif // PARAM_H_

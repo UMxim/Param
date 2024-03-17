@@ -8,11 +8,6 @@
 #define CHECKSUMM_INIT  	0x96C30FA5UL
 #define FIND_CONSTANT		0xDEADBEEF
 
-#define STATE_NO_INIT 		0
-#define STATE_IDLE			1
-#define STATE_READ			2
-#define STATE_WRITE			3
-
 typedef struct
 {
 	uint8_t dataLen;
@@ -72,13 +67,13 @@ static uint8_t buff[BUFF_MAX_SIZE] __attribute__ ((aligned (4)));
 
 static packet_header_t * const header = (packet_header_t *)buff;
 static uint8_t * const data = buff + sizeof(packet_header_t);
-static volatile uint8_t state = STATE_NO_INIT;
 
 static volatile struct
 {
 	uint32_t ns;
 	uint32_t s;
-} timer = {0,0};
+	int32_t reset; // обратный таймер ресета в ns
+} timer = {0, 0, INT32_MAX};
 
 typedef enum
 {
@@ -112,6 +107,18 @@ static uint8_t _CalcCS()
 	return cs;
 }
 
+static uint16_t _CopyStr(const char *str, uint8_t data_pos) // указатель на исходную строку, позиция в буфере данных для записи
+{
+	uint16_t len = 0;
+	while (str)
+	{
+		data[data_pos++] = *(str++);
+		len++;
+		if (len == PARAM_MAX_STR) break;
+	}
+	return len;
+}
+
 // Сбрасываем на флеш при необходимости
 void _Flush()
 {
@@ -123,14 +130,14 @@ void _Flush()
 	{
 		ps.cs ^= ((uint32_t*)&ps)[i];
 	}
-	Param_HAL_WriteFlashData(&ps, sizeof(ps));
+	Param_HAL_WriteFlashData((uint32_t*)&ps, PARAM_LIST_NUM + STAT_LIST_NUM + 1);
 }
 
 static inline void _Get_info()
 {
 	header->type = TYPE_GET_INFO;
-	header->dataLen = 8 + PARAM_MAX_STR;
-	memcpy(data, &info, header->dataLen); // первые значения. Для дисплея берем только 16 букв
+	memcpy(data, &info, 8); // первые значения.
+	header->dataLen = 8 + _CopyStr(info.name, 8);
 }
 
 static inline error_t _Get_statistic()
@@ -141,8 +148,8 @@ static inline error_t _Get_statistic()
 
 	header->type = TYPE_GET_STATISTIC;
 	memcpy(data, ps.statistic + n, sizeof(ps.statistic[0]));
-	memcpy(data+sizeof(ps.statistic[0]), statisticDef[n].text, PARAM_MAX_STR);
-	header->dataLen = sizeof(ps.statistic[0]) + PARAM_MAX_STR; // 4 + str
+	//memcpy(data+sizeof(ps.statistic[0]), statisticDef[n].text, PARAM_MAX_STR);
+	header->dataLen = sizeof(ps.statistic[0]) + _CopyStr(statisticDef[n].text, 4) ; // 4 + str
 	return ERROR_OK;
 }
 
@@ -163,8 +170,8 @@ static inline error_t _Get_param()
 	header->type = TYPE_GET_PARAM;
 	memcpy(data, &ps.params[n], sizeof(ps.params[0]));	//4
 	memcpy(data + sizeof(ps.params[0]), &paramsDef[n], sizeof(paramsDef[0])); //4
-	memcpy(data + 2 * sizeof(ps.params[0]), paramsDef[n].text, PARAM_MAX_STR);
-	header->dataLen = 2 * sizeof(ps.params[0]) + PARAM_MAX_STR; // 8 + 16
+	//memcpy(data + 2 * sizeof(ps.params[0]), paramsDef[n].text, PARAM_MAX_STR);
+	header->dataLen = 2 * sizeof(ps.params[0]) + _CopyStr(paramsDef[n].text, 8); // 8 + 16
 	return ERROR_OK;
 }
 
@@ -202,6 +209,7 @@ static inline void _Reset()
 	_Flush();
 	header->type = TYPE_RESET;
 	header->dataLen = 0;
+	timer.reset = 500000000; // 500ms
 }
 
 static inline void _Write_FW()
@@ -209,7 +217,8 @@ static inline void _Write_FW()
 	_Flush();
 	header->type = TYPE_WRITE_FW;
 	header->dataLen = 0;
-	Param_HAL_SetBootCfg();
+	Param_HAL_SetBootCfg(); // настраиваются только биты boot / uart не изменяется
+	timer.reset = 500000000; // 500ms
 }
 
 static void SendError(error_t errN)
@@ -219,7 +228,7 @@ static void SendError(error_t errN)
 	*data = errN;
 	header->checksumm = 0;
 	header->checksumm = _CalcCS();
-	Param_HAL_Transmit(buff, 4);
+	//Param_HAL_Transmit(buff, 4);
 }
 
 static void _ParseBuff(void)
@@ -274,14 +283,13 @@ static void _ParseBuff(void)
 	header->checksumm = _CalcCS();
 
 	transmit:
-	state = STATE_WRITE;
 	Param_HAL_Transmit(buff, sizeof(packet_header_t) + header->dataLen);
 }
 
 
 void Param_Init(void * dump_in, uint16_t dump_len, int dump_size)
 {
-	Param_HAL_Init(Param_HAL_Callback);
+	Param_HAL_Init(Param_RxCallback);
 	// read params
 	uint32_t *dataFlash = Param_HAL_GetFlashDataAddr();
 	dump.ptr = dump_in;
@@ -303,16 +311,15 @@ void Param_Init(void * dump_in, uint16_t dump_len, int dump_size)
 	}
 }
 
-_Param_Cycle()
+void _Param_Cycle()
 {
 
 }
 
 // Вызываем в прерывании при получении байта
-void Param_RecieveByte(uint8_t byte)
+void Param_RxCallback(uint8_t byte)
 {
 	static uint16_t pos = 0;	// позиция в массиве для текущего байта
-	state = STATE_READ;
 	buff[pos] = byte;
 	pos++;
 
@@ -325,20 +332,17 @@ void Param_RecieveByte(uint8_t byte)
 	return;
 }
 
-void Param_TxCallback(uint8_t result)
-{
-	if (result) // tx complite
-	{
-		if (header->type == TYPE_RESET || header->type == TYPE_WRITE_FW)
-			Param_HAL_Reset();
-	}
-	state = STATE_IDLE;
-}
-
 // Вызывать в прерывании таймера. Квант времени описать в дефайне
 void Param_Timer_Callback(void)
 {
 	timer.ns += PARAM_EXT_TIMER_PERIOD_NS;
+	if (timer.reset != INT32_MAX)
+	{
+		timer.reset -= PARAM_EXT_TIMER_PERIOD_NS;
+		if (timer.reset < 0)
+			Param_HAL_Reset();
+	}
+
 	if ( timer.ns >= 1000000000 )
 	{
 		timer.ns -= 1000000000;
@@ -347,16 +351,3 @@ void Param_Timer_Callback(void)
 	}
 }
 
-
-void Param_HAL_Callback(uint8_t device, uint8_t param)
-{
-	switch (device)
-	{
-	case 1:	// rx
-		Param_RecieveByte(param);
-		break;
-	case 2: // tx
-		Param_TxCallback(param);
-		break;
-	}
-}
