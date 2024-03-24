@@ -11,28 +11,30 @@ static uint16_t txLen;
 
 void USART2_IRQHandler(void)
 {
-	if (USART2->ISR | USART_ISR_TXE) // tx empty
+	if (USART2->ISR | USART_ISR_TC) // Да, надо обрабатывать не по complite, а по опустошению буфера. Но по правильному глючит
 	{
-		if (txLen --)
+		if (txLen == 0)
 		{
-			USART2->TDR = *(txBuff++);
+			USART2->CR1 = USART_CR1_RXNEIE | USART_CR1_RE | USART_CR1_UE;	// txcmplt , enableTx, enableUART
 		}
-		else
-		{
-			USART2->CR1 |= USART_CR1_RXNEIE | USART_CR1_RE | USART_CR1_UE;
-		}
+		txLen --;
+		USART2->TDR = (uint8_t)*(txBuff++);
 	}
+	//else if (USART2->ISR | USART_ISR_TC)
+	/*{
+		USART2->CR1 = 0;//USART_CR1_RXNEIE | USART_CR1_RE | USART_CR1_UE;
+	}*/
 	else if (USART2->ISR | USART_ISR_RXNE)
 	{
 		uint8_t byte = USART2->RDR;
-		_callback_rx(byte);// read
+		//_callback_rx(byte);// read
 	}
 }
 
 void Param_HAL_Transmit(uint8_t *data, uint16_t size)
 {
-	USART2->TDR = *(data++);
-	USART2->CR1 = /*USART_CR1_TCIE |*/ USART_CR1_TXEIE | USART_CR1_TE | USART_CR1_UE;	// txcmplt , txempty, enableTx, enableUART
+	USART2->TDR = (uint8_t)*(data++);
+	USART2->CR1 = USART_CR1_TCIE | USART_CR1_TE | USART_CR1_UE;	// txempty, enableTx, enableUART
 	txBuff = data;
 	txLen = size - 1;
 }
@@ -76,7 +78,8 @@ void Param_HAL_Init(void(*callback_rx)(uint8_t))
 	UPDATE_MASK(GPIOA->PUPDR, GPIO_PUPDR_PUPD9_Msk, GPIO_PUPDR_PUPD9_0);		//2
 	UPDATE_MASK(GPIOA->AFR[1], GPIO_AFRH_AFSEL9_Msk, 4 << GPIO_AFRH_AFSEL9_Pos);
 	UPDATE_MASK(GPIOA->MODER, GPIO_MODER_MODE9_Msk, GPIO_MODER_MODE9_1);
-
+	NVIC->ISER[0] = 1<<USART2_IRQn;
+	__enable_irq();
 	_callback_rx = callback_rx;
 }
 
