@@ -1,5 +1,4 @@
 #include "param_hal_stm32L011D4P6.h"
-#include "stm32l011xx.h"
 #include "param_cfg.h"
 
 #define UPDATE_MASK(reg, mask, val) reg = ( (reg) & ~(mask) ) | (val)
@@ -8,6 +7,7 @@ static void(*_callback_rx)(uint8_t);
 
 static uint8_t *txBuff;
 static uint16_t txLen;
+volatile static uint8_t isTransmitt = 0; // Передача в процессе.
 
 void USART2_IRQHandler(void)
 {
@@ -15,7 +15,8 @@ void USART2_IRQHandler(void)
 	{
 		if (txLen == 0)
 		{
-			USART2->CR1 = USART_CR1_RXNEIE | USART_CR1_RE | USART_CR1_UE;	// txcmplt , enableTx, enableUART
+			USART2->CR1 = USART_CR1_RXNEIE | USART_CR1_RE | USART_CR1_UE;	// txcmplt , enableRx, enableUART
+			isTransmitt = 0;
 		}
 		txLen --;
 		USART2->TDR = (uint8_t)*(txBuff++);
@@ -27,12 +28,13 @@ void USART2_IRQHandler(void)
 	else if (USART2->ISR | USART_ISR_RXNE)
 	{
 		uint8_t byte = USART2->RDR;
-		//_callback_rx(byte);// read
+		_callback_rx(byte);// read
 	}
 }
 
 void Param_HAL_Transmit(uint8_t *data, uint16_t size)
 {
+	isTransmitt = 1;
 	USART2->TDR = (uint8_t)*(data++);
 	USART2->CR1 = USART_CR1_TCIE | USART_CR1_TE | USART_CR1_UE;	// txempty, enableTx, enableUART
 	txBuff = data;
@@ -71,7 +73,7 @@ void Param_HAL_Init(void(*callback_rx)(uint8_t))
 	RCC->APB1ENR |= RCC_APB1ENR_USART2EN;
 	RCC->IOPENR |= RCC_IOPENR_GPIOAEN;
 	USART2->CR3 = USART_CR3_HDSEL;
-	USART2->BRR = SYS_CLK_FREQ_HZ / PARAM_UART_BR;
+	USART2->BRR = PARAM_SYS_CLK_FREQ_HZ / PARAM_UART_BR;
 	USART2->CR1 |= USART_CR1_RXNEIE | USART_CR1_RE | USART_CR1_UE;
 	// GPIO
 	GPIOA->OTYPER |= GPIO_OTYPER_OT_9; // OpenDrain 1
@@ -88,18 +90,46 @@ void Param_HAL_Reset()
 	NVIC_SystemReset();
 }
 
-void Param_HAL_SetBootCfg()
+void Param_HAL_FW_Update(uint8_t* buff)
 {
-//	if ((FLASH->PECR & FLASH_PECR_PELOCK) == 0)
-//	{
-//		if ((FLASH->PECR & FLASH_PECR_OPTLOCK) != 0)
-//		{
-//			FLASH->OPTKEYR = 0xFBEAD9C8;
-//			FLASH->OPTKEYR = 0x24252627;
-//		}
-//	}
-	// nboot1 = 31  nboot0 = 30 nbootsel = 29
-	const uint32_t optr_mask = 				(1<<29) | (1<<30) | (1<<31);
-	const uint32_t optr_boot_from_system = 	(1<<29) | (0<<30) | (1<<31);
-	UPDATE_MASK(FLASH->OPTR, optr_mask, optr_boot_from_system);
+
+	FLASH->PEKEYR =  0x89ABCDEF;
+	FLASH->PEKEYR =  0x02030405;
+	FLASH->PRGKEYR = 0x8C9DAEBF;
+	FLASH->PRGKEYR = 0x13141516;
+
+	while(1)
+	{
+		uint8_t pos = 1;
+		// rx
+		/*BOOT_UART->CR1 = USART_CR1_RE | USART_CR1_UE;
+		while(!(BOOT_UART->ISR & USART_ISR_RXNE_Msk));
+		buff[0] = BOOT_UART->RDR;
+
+		for(int i=1; i<buff[0]+3; i++)
+		{
+			while(!(BOOT_UART->ISR & USART_ISR_RXNE_Msk));
+			buff[pos++] = BOOT_UART->RDR;
+		}
+		// work
+
+		// enable Tx
+		BOOT_UART->CR1 = USART_CR1_TE | USART_CR1_UE;
+		while (size--)
+		{
+			BOOT_UART->TDR = *(data++);
+			while(!(BOOT_UART->ISR & USART_ISR_TXE_Msk));
+		}
+
+		while(!(BOOT_UART->ISR & USART_ISR_TC_Msk));
+
+		//UART->CR1 = USART_CR1_UE;*/
+	}
+
+}
+
+
+uint8_t GetTxFlag(void)
+{
+	return isTransmitt;
 }

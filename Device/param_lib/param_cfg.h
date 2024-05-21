@@ -42,5 +42,6 @@
 #define SW_VER  0x01
 #define DEVICE_STR "TEST_DEVICE"
 
-#define PARAM_MAX_STR 16 // Максимальный размер строки для экрана. Без /0
+#define PARAM_BUFF_SIZE 64 // Размер выделяемого буфера
+#define PARAM_FOO_UPDATE_SIZE 512 // Сложный параметр - размер функции обновления для копирования в память
 #endif // PARAM_CFG_H_

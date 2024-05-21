@@ -4,10 +4,11 @@
 
 #define PARAM_LIST_NUM 		( sizeof(paramsDef) / sizeof(params_t) )
 #define STAT_LIST_NUM 		( sizeof(statisticDef) / sizeof(params_t) )
-#define BUFF_MAX_SIZE 		(sizeof(packet_header_t) + 8 + PARAM_MAX_STR) // Len Type CS NU Data. Data расчитана для макимального ответа
+#define DATA_MAX_SIZE 		(PARAM_BUFF_SIZE - sizeof(packet_header_t)) // Len Type CS NU Data. Data расчитана для макимального ответа
 #define CHECKSUMM_INIT  	0x96C30FA5UL
 #define FIND_CONSTANT		0xDEADBEEF
 
+#define GET_OFFSET(start, val) ((uint32_t)(&(val))-(uint32_t)(&(start)))
 typedef struct
 {
 	uint8_t dataLen;
@@ -22,14 +23,18 @@ static const struct
 	uint8_t type;
 	uint8_t hw_ver;
 	uint8_t sw_ver;
-	uint8_t max_data_size;
-	uint8_t name[];
+	uint8_t buffer_size;
+	uint16_t sec_num;
+	uint16_t sec_size;
+	char name[];
 } info = {
 			FIND_CONSTANT,
 			HW_TYPE,
 			HW_VER,
 			SW_VER,
-			BUFF_MAX_SIZE - sizeof(packet_header_t),
+			PARAM_BUFF_SIZE,
+			PARAM_SECTOR_NUM,
+			PARAM_SECTOR_SIZE,
 			DEVICE_STR
 		  };
 
@@ -63,7 +68,7 @@ static struct
 //uint32_t * const cs = param_statistic_cs_arr + PARAM_LIST_NUM + STAT_LIST_NUM;
 
 
-static uint8_t buff[BUFF_MAX_SIZE] __attribute__ ((aligned (4)));
+static uint8_t buff[PARAM_BUFF_SIZE] __attribute__ ((aligned (4)));
 
 static packet_header_t * const header = (packet_header_t *)buff;
 static uint8_t * const data = buff + sizeof(packet_header_t);
@@ -72,8 +77,7 @@ static volatile struct
 {
 	uint32_t ns;
 	uint32_t s;
-	int32_t reset; // обратный таймер ресета в ns
-} timer = {0, 0, INT32_MAX};
+} timer = {0, 0};
 
 typedef enum
 {
@@ -94,7 +98,7 @@ typedef enum
 	TYPE_WRITE_PARAM =		4,
 	TYPE_GET_DUMP =			6,
 	TYPE_RESET =			7,
-	TYPE_WRITE_FW = 		8,
+	TYPE_FW_UPDATE = 		8,
 	TYPE_ERROR = 			0x7F
 } type_t;
 
@@ -114,7 +118,7 @@ static uint16_t _CopyStr(const char *str, uint8_t data_pos) // указател�
 	{
 		data[data_pos++] = *(str++);
 		len++;
-		if (len == PARAM_MAX_STR) break;
+		if (len == DATA_MAX_SIZE) break;
 	}
 	return len;
 }
@@ -136,8 +140,9 @@ void _Flush()
 static inline void _Get_info()
 {
 	header->type = TYPE_GET_INFO;
-	memcpy(data, &info, 8); // первые значения.
-	header->dataLen = 8 + _CopyStr(info.name, 8);
+	uint8_t offset = GET_OFFSET(info, info.name);
+	memcpy(data, &info, offset); // первые значения.
+	header->dataLen = offset + _CopyStr(info.name, offset);
 }
 
 static inline error_t _Get_statistic()
@@ -200,7 +205,7 @@ static inline void _Get_dump()
 		header->dataLen = 0;
 		return;
 	}
-	header->dataLen = ((dump.len - offset) > info.max_data_size) ? info.max_data_size : (dump.len - offset);
+	header->dataLen = ((dump.len - offset) > DATA_MAX_SIZE) ? DATA_MAX_SIZE : (dump.len - offset);
 	memcpy(data, dump.ptr + offset, header->dataLen);
 }
 
@@ -209,16 +214,32 @@ static inline void _Reset()
 	_Flush();
 	header->type = TYPE_RESET;
 	header->dataLen = 0;
-	timer.reset = 500000000; // 500ms
+	header->checksumm = 0;
+	header->checksumm = _CalcCS();
+	Param_HAL_Transmit(buff, sizeof(packet_header_t) + header->dataLen);
+	while(GetTxFlag);
+	Param_HAL_Reset();
 }
 
 static inline void _Write_FW()
 {
+	uint8_t fooArr[PARAM_FOO_UPDATE_SIZE]; // Вот так....
 	_Flush();
-	header->type = TYPE_WRITE_FW;
+	header->type = TYPE_FW_UPDATE;
 	header->dataLen = 0;
-	Param_HAL_SetBootCfg(); // настраиваются только биты boot / uart не изменяется
-	timer.reset = 500000000; // 500ms
+
+	header->checksumm = 0;
+	header->checksumm = _CalcCS();
+
+	Param_HAL_Transmit(buff, sizeof(packet_header_t) + header->dataLen);
+	while(GetTxFlag);
+	//
+	__disable_irq();
+	memcpy(fooArr,Param_HAL_FW_Update, PARAM_FOO_UPDATE_SIZE);
+
+	typedef void(*Foo_t)(uint8_t*);//объявляем пользовательский тип
+	Foo_t foo = (Foo_t)fooArr;//и создаём переменную этого типа
+	foo(buff);
 }
 
 static void SendError(error_t errN)
@@ -266,7 +287,7 @@ static void _ParseBuff(void)
 	case TYPE_RESET | 0x80:
 		_Reset();
 		break;
-	case TYPE_WRITE_FW | 0x80:
+	case TYPE_FW_UPDATE | 0x80:
 		_Write_FW();
 		break;
 	default:
@@ -337,12 +358,6 @@ void Param_RxCallback(uint8_t byte)
 void Param_Timer_Callback(void)
 {
 	timer.ns += PARAM_EXT_TIMER_PERIOD_NS;
-	if (timer.reset != INT32_MAX)
-	{
-		timer.reset -= PARAM_EXT_TIMER_PERIOD_NS;
-		if (timer.reset < 0)
-			Param_HAL_Reset();
-	}
 
 	if ( timer.ns >= 1000000000 )
 	{
