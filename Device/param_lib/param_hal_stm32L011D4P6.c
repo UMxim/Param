@@ -98,32 +98,51 @@ void Param_HAL_FW_Update(uint8_t* buff)
 	FLASH->PRGKEYR = 0x8C9DAEBF;
 	FLASH->PRGKEYR = 0x13141516;
 
+	uint8_t isReset = 0;
 	while(1)
 	{
 		uint8_t pos = 1;
 		// rx
-		/*BOOT_UART->CR1 = USART_CR1_RE | USART_CR1_UE;
-		while(!(BOOT_UART->ISR & USART_ISR_RXNE_Msk));
-		buff[0] = BOOT_UART->RDR;
+		USART2->CR1 = USART_CR1_RE | USART_CR1_UE;
+		while(!(USART2->ISR & USART_ISR_RXNE_Msk));
+		buff[0] = USART2->RDR;
 
 		for(int i=1; i<buff[0]+3; i++)
 		{
-			while(!(BOOT_UART->ISR & USART_ISR_RXNE_Msk));
-			buff[pos++] = BOOT_UART->RDR;
+			while(!(USART2->ISR & USART_ISR_RXNE_Msk));
+			buff[pos++] = USART2->RDR;
 		}
 		// work
-
-		// enable Tx
-		BOOT_UART->CR1 = USART_CR1_TE | USART_CR1_UE;
-		while (size--)
+		switch(buff[1])
 		{
-			BOOT_UART->TDR = *(data++);
-			while(!(BOOT_UART->ISR & USART_ISR_TXE_Msk));
+		case 0x89: // erase sector
+			break;
+
+		case 0x8A: // write data
+			break;
+
+		case 0x87: // reset
+			isReset = 1;
+			break;
 		}
 
-		while(!(BOOT_UART->ISR & USART_ISR_TC_Msk));
+		buff[0] = 0;
+		buff[1] &= 0xF;
+		buff[2] = 0x96C30FA5UL ^ buff[0] ^ buff[1];
+		buff[3] = 0;
+		// enable Tx
+		USART2->CR1 = USART_CR1_TE | USART_CR1_UE;
+		for (int i=0; i<4; i++)
+		{
+			USART2->TDR = buff[i];
+			while(!(USART2->ISR & USART_ISR_TXE_Msk));
+		}
 
-		//UART->CR1 = USART_CR1_UE;*/
+		while(!(USART2->ISR & USART_ISR_TC_Msk));
+
+		if (isReset)
+			SCB->AIRCR  = ((0x5FAUL << SCB_AIRCR_VECTKEY_Pos) | SCB_AIRCR_SYSRESETREQ_Msk); // reset
+		//UART->CR1 = USART_CR1_UE;
 	}
 
 }
